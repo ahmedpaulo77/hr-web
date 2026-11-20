@@ -33,10 +33,10 @@ function Hero() {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-10 animate-fade-up"
           style={{ border:'1px solid rgba(139,92,246,0.3)', background:'rgba(139,92,246,0.1)' }}>
           <Sparkle size={13} weight="fill" className="text-amber-400" />
-          <span style={{ fontSize:'12px', fontWeight:700, color:'#c4b5fd' }}>
+          <span style={{ fontSize:'12px', fontWeight:700, color:'var(--accent-2)' }}>
             النظام الأكثر مرونةً في الشرق الأوسط
           </span>
-          <span className="text-xs font-bold" style={{ color:'#a78bfa' }}>جديد</span>
+          <span className="text-xs font-bold" style={{ color:'var(--accent-2)' }}>جديد</span>
         </div>
 
         {/* Headline */}
@@ -64,7 +64,7 @@ function Hero() {
           </Link>
           <Link to="/features" className="btn-outline"
             style={{ fontSize:'15px', padding:'12px 28px' }}>
-            <Play size={15} weight="fill" style={{ color:'#a78bfa' }} />
+            <Play size={15} weight="fill" style={{ color:'var(--accent-2)' }} />
             شاهد كيف يعمل
           </Link>
         </div>
@@ -83,34 +83,11 @@ function Hero() {
                   {s.n}
                   {s.star && <Star size={17} weight="fill" color="#f59e0b" />}
                 </p>
-                <p style={{ fontSize:'11px', color:'rgba(var(--fg-rgb),0.38)', marginTop:'4px', fontWeight:600 }}>{s.l}</p>
+                <p style={{ fontSize:'11px', color:'rgba(var(--fg-rgb),0.68)', marginTop:'4px', fontWeight:600 }}>{s.l}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
-    </section>
-  )
-}
-
-/* ─── Logos ─── */
-function LogosBar() {
-  const logos = ['أرامكو', 'STC', 'مصرف الراجحي', 'نيوم', 'الجامعة السعودية', 'صحة']
-  return (
-    <section style={{ padding:'28px 24px', borderTop:'1px solid rgba(139,92,246,0.1)', borderBottom:'1px solid rgba(139,92,246,0.1)' }}>
-      <p style={{ textAlign:'center', fontSize:'11px', color:'rgba(var(--fg-rgb),0.3)', fontWeight:700,
-        textTransform:'uppercase', letterSpacing:'3px', marginBottom:'20px' }}>
-        تثق بنا أكبر الشركات في المنطقة
-      </p>
-      <div style={{ display:'flex', gap:'32px', alignItems:'center', justifyContent:'center', flexWrap:'wrap' }}>
-        {logos.map(l => (
-          <span key={l} style={{ color:'rgba(var(--fg-rgb),0.18)', fontWeight:900, fontSize:'15px',
-            cursor:'default', transition:'color 0.2s' }}
-            onMouseEnter={e => (e.currentTarget.style.color='rgba(196,181,253,0.5)')}
-            onMouseLeave={e => (e.currentTarget.style.color='rgba(var(--fg-rgb),0.18)')}>
-            {l}
-          </span>
-        ))}
       </div>
     </section>
   )
@@ -145,10 +122,10 @@ const features = [
 ]
 
 const colorMap: Record<string, { border: string; iconBg: string; iconClr: string; tagBg: string; tagClr: string }> = {
-  violet:  { border:'rgba(139,92,246,0.2)',  iconBg:'rgba(139,92,246,0.12)', iconClr:'#a78bfa', tagBg:'rgba(139,92,246,0.12)', tagClr:'#c4b5fd' },
-  emerald: { border:'rgba(16,185,129,0.2)',  iconBg:'rgba(16,185,129,0.12)', iconClr:'#34d399', tagBg:'rgba(16,185,129,0.12)', tagClr:'#6ee7b7' },
-  amber:   { border:'rgba(245,158,11,0.2)',  iconBg:'rgba(245,158,11,0.12)', iconClr:'#fbbf24', tagBg:'rgba(245,158,11,0.12)', tagClr:'#fcd34d' },
-  cyan:    { border:'rgba(6,182,212,0.2)',   iconBg:'rgba(6,182,212,0.12)',  iconClr:'#22d3ee', tagBg:'rgba(6,182,212,0.12)',  tagClr:'#67e8f9' },
+  violet:  { border:'rgba(139,92,246,0.2)',  iconBg:'rgba(139,92,246,0.12)', iconClr:'var(--txt-violet)',  tagBg:'rgba(139,92,246,0.12)', tagClr:'var(--tag-violet)'  },
+  emerald: { border:'rgba(16,185,129,0.2)',  iconBg:'rgba(16,185,129,0.12)', iconClr:'var(--txt-emerald)', tagBg:'rgba(16,185,129,0.12)', tagClr:'var(--tag-emerald)' },
+  amber:   { border:'rgba(245,158,11,0.2)',  iconBg:'rgba(245,158,11,0.12)', iconClr:'var(--txt-amber)',   tagBg:'rgba(245,158,11,0.12)', tagClr:'var(--tag-amber)'   },
+  cyan:    { border:'rgba(6,182,212,0.2)',   iconBg:'rgba(6,182,212,0.12)',  iconClr:'var(--txt-cyan)',    tagBg:'rgba(6,182,212,0.12)',  tagClr:'var(--tag-cyan)'    },
 }
 
 function Features() {
@@ -158,14 +135,14 @@ function Features() {
 
         {/* Header */}
         <div style={{ textAlign:'center', marginBottom:'60px' }}>
-          <span style={{ fontSize:'11px', fontWeight:800, color:'#8b5cf6', textTransform:'uppercase', letterSpacing:'3px' }}>
+          <span style={{ fontSize:'11px', fontWeight:800, color:'var(--accent-2)', textTransform:'uppercase', letterSpacing:'3px' }}>
             المميزات
           </span>
           <h2 className="font-black text-white" style={{ fontSize:'clamp(2rem,4vw,3rem)', marginTop:'12px', marginBottom:'16px', lineHeight:1.2 }}>
             كل ما تحتاجه في{' '}
             <span className="text-gradient">مكان واحد</span>
           </h2>
-          <p style={{ color:'rgba(var(--fg-rgb),0.45)', fontSize:'17px', maxWidth:'500px', margin:'0 auto', lineHeight:1.7 }}>
+          <p style={{ color:'rgba(var(--fg-rgb),0.72)', fontSize:'17px', maxWidth:'500px', margin:'0 auto', lineHeight:1.7 }}>
             من تقديم الطلبات إلى التقارير التفصيلية — منصة مصممة للشركات العربية.
           </p>
         </div>
@@ -185,7 +162,7 @@ function Features() {
                   <f.icon size={22} weight="duotone" color={c.iconClr} />
                 </div>
                 <h3 className="font-black text-white" style={{ fontSize:'18px', marginBottom:8 }}>{f.title}</h3>
-                <p style={{ color:'rgba(var(--fg-rgb),0.45)', fontSize:'14px', lineHeight:1.7, marginBottom:18 }}>{f.desc}</p>
+                <p style={{ color:'rgba(var(--fg-rgb),0.72)', fontSize:'14px', lineHeight:1.7, marginBottom:18 }}>{f.desc}</p>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
                   {f.items.map(item => (
                     <span key={item} style={{ fontSize:'12px', fontWeight:700, padding:'4px 12px', borderRadius:10,
@@ -221,7 +198,7 @@ function HowItWorks() {
     <section style={{ padding:'96px 24px', background:'rgba(139,92,246,0.03)' }}>
       <div style={{ maxWidth:'1100px', margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:'60px' }}>
-          <span style={{ fontSize:'11px', fontWeight:800, color:'#f59e0b', textTransform:'uppercase', letterSpacing:'3px' }}>
+          <span style={{ fontSize:'11px', fontWeight:800, color:'var(--txt-amber)', textTransform:'uppercase', letterSpacing:'3px' }}>
             كيف يعمل
           </span>
           <h2 className="font-black text-white" style={{ fontSize:'clamp(2rem,4vw,3rem)', marginTop:'12px', lineHeight:1.2 }}>
@@ -231,7 +208,7 @@ function HowItWorks() {
         <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:'24px' }}>
           {steps.map((s, i) => (
             <div key={s.n} className="animate-fade-up" style={{ textAlign:'center', padding:'32px 20px',
-              background:'rgba(52,42,92,0.5)', borderRadius:20, border:'1px solid rgba(139,92,246,0.14)' }}>
+              background:'var(--step-bg)', borderRadius:20, border:'1px solid rgba(139,92,246,0.14)' }}>
               <div style={{ width:60, height:60, borderRadius:16, margin:'0 auto 20px',
                 background:'linear-gradient(135deg,rgba(139,92,246,0.25),rgba(109,40,217,0.15))',
                 border:'1px solid rgba(139,92,246,0.25)',
@@ -239,7 +216,7 @@ function HowItWorks() {
                 <span className="text-gradient font-black" style={{ fontSize:'20px' }}>{s.n}</span>
               </div>
               <h3 className="font-black text-white" style={{ fontSize:'17px', marginBottom:8 }}>{s.title}</h3>
-              <p style={{ color:'rgba(var(--fg-rgb),0.42)', fontSize:'13px', lineHeight:1.7 }}>{s.desc}</p>
+              <p style={{ color:'rgba(var(--fg-rgb),0.72)', fontSize:'13px', lineHeight:1.7 }}>{s.desc}</p>
             </div>
           ))}
         </div>
@@ -275,7 +252,7 @@ function Testimonials() {
     <section style={{ padding:'96px 24px' }}>
       <div style={{ maxWidth:'1100px', margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:'60px' }}>
-          <span style={{ fontSize:'11px', fontWeight:800, color:'#8b5cf6', textTransform:'uppercase', letterSpacing:'3px' }}>
+          <span style={{ fontSize:'11px', fontWeight:800, color:'var(--accent-2)', textTransform:'uppercase', letterSpacing:'3px' }}>
             آراء العملاء
           </span>
           <h2 className="font-black text-white" style={{ fontSize:'clamp(2rem,4vw,3rem)', marginTop:'12px', lineHeight:1.2 }}>
@@ -305,7 +282,7 @@ function Testimonials() {
                 </div>
                 <div>
                   <p style={{ fontWeight:800, fontSize:'14px', color:'rgba(var(--fg-rgb),0.9)' }}>{t.name}</p>
-                  <p style={{ fontSize:'11px', color:'rgba(var(--fg-rgb),0.35)' }}>{t.role} · {t.company}</p>
+                  <p style={{ fontSize:'11px', color:'rgba(var(--fg-rgb),0.62)' }}>{t.role} · {t.company}</p>
                 </div>
               </div>
             </div>
@@ -324,7 +301,7 @@ function CTABanner() {
         <div className="glass-card" style={{
           padding:'72px 48px', textAlign:'center',
           border:'1px solid rgba(139,92,246,0.25)',
-          background:'linear-gradient(135deg,rgba(109,40,217,0.18) 0%,rgba(52,42,92,0.6) 50%,rgba(245,158,11,0.06) 100%)',
+          background:'var(--cta-bg)',
           position:'relative', overflow:'hidden',
         }}>
           {/* glow */}
@@ -343,7 +320,7 @@ function CTABanner() {
             <h2 className="font-black text-white" style={{ fontSize:'clamp(2rem,4vw,3rem)', lineHeight:1.2, marginBottom:16 }}>
               جاهز لتحويل<br /><span className="text-gradient">إدارة HR؟</span>
             </h2>
-            <p style={{ color:'rgba(var(--fg-rgb),0.45)', fontSize:'17px', marginBottom:36, maxWidth:460, margin:'0 auto 36px' }}>
+            <p style={{ color:'rgba(var(--fg-rgb),0.72)', fontSize:'17px', marginBottom:36, maxWidth:460, margin:'0 auto 36px' }}>
               انضم لأكثر من 500 شركة تستخدم HR Portal وجرّب الفرق بنفسك.
             </p>
 
@@ -370,7 +347,6 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <LogosBar />
       <Features />
       <HowItWorks />
       <Testimonials />

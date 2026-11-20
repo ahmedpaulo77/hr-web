@@ -27,8 +27,10 @@ export default function AuthLayout() {
         width: '50%',
         flexShrink: 0,
         flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '48px',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 32,
+        padding: '48px 32px',
         position: 'relative',
         overflow: 'hidden',
       }} className="auth-left">
@@ -55,7 +57,7 @@ export default function AuthLayout() {
 
         {/* Logo */}
         <Link to="/" style={{
-          display: 'flex', alignItems: 'center', gap: 10,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           textDecoration: 'none', position: 'relative', zIndex: 1,
         }}>
           <div style={{
@@ -74,7 +76,10 @@ export default function AuthLayout() {
         {/* Main content — RTL text */}
         <div
           className="auth-brand-content"
-          style={{ position: 'relative', zIndex: 1, direction: 'rtl', textAlign: 'right' }}
+          style={{
+            position: 'relative', zIndex: 1, direction: 'rtl', textAlign: 'center',
+            width: '100%', maxWidth: 480, flex: '0 1 auto', padding: 0,
+          }}
         >
           <div style={{
             width: 'fit-content',
@@ -82,13 +87,14 @@ export default function AuthLayout() {
             padding: '6px 14px', borderRadius: 99,
             border: '1px solid rgba(139,92,246,0.3)',
             background: 'rgba(139,92,246,0.1)',
-            marginBottom: 24,
+            alignSelf: 'center',
+            marginBottom: 16,
           }} className="auth-brand-badge">
             <span style={{
               width: 7, height: 7, borderRadius: '50%',
               background: '#34d399', display: 'inline-block',
             }} />
-            <span className="auth-brand-badge-text" style={{ fontSize: 12, fontWeight: 700, color: '#c4b5fd', fontFamily: 'Cairo, sans-serif' }}>
+            <span className="auth-brand-badge-text" style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent-2)', fontFamily: 'Cairo, sans-serif' }}>
               +500 شركة تثق بنا الآن
             </span>
           </div>
@@ -105,14 +111,14 @@ export default function AuthLayout() {
 
           <p className="auth-brand-description" style={{
             color: 'rgba(var(--fg-rgb),0.45)', fontSize: 16,
-            lineHeight: 1.8, maxWidth: 420, marginBottom: 24,
+            lineHeight: 1.8, maxWidth: 420, margin: '0 auto 24px',
             fontFamily: 'Cairo, sans-serif',
           }}>
             خصّص كل شيء من الداشبورد — الحقول، المسميات،
             أنواع الطلبات — بدون كود.
           </p>
 
-          <div className="auth-brand-features" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="auth-brand-features" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             {[
               '14+ نوع طلب جاهز للاستخدام',
               'Form Builder بالسحب والإفلات',
@@ -120,11 +126,11 @@ export default function AuthLayout() {
               'تقارير وتحليلات متقدمة',
             ].map(f => (
               <div key={f} className="auth-brand-feature" style={{
-                display: 'flex', alignItems: 'center', gap: 8,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)',
                 fontWeight: 600, lineHeight: 1.7, fontFamily: 'Cairo, sans-serif',
               }}>
-                <CheckCircle size={16} weight="fill" color="#a78bfa" style={{ flexShrink: 0 }} />
+                <CheckCircle size={16} weight="fill" color="var(--accent-2)" style={{ flexShrink: 0 }} />
                 <span>{f}</span>
               </div>
             ))}
@@ -133,7 +139,7 @@ export default function AuthLayout() {
 
         {/* Bottom stats */}
         <div className="auth-brand-stats" style={{
-          display: 'flex', gap: 28,
+          display: 'flex', justifyContent: 'center', gap: 28,
           position: 'relative', zIndex: 1,
           direction: 'rtl',
         }}>
@@ -143,11 +149,11 @@ export default function AuthLayout() {
             { n: '24/7', l: 'دعم فني', star: false },
           ].map(s => (
             <div key={s.l}>
-              <p style={{ fontSize: 20, fontWeight: 900, color: 'var(--ink)', fontFamily: 'Cairo, sans-serif', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <p style={{ fontSize: 20, fontWeight: 900, color: 'var(--ink)', fontFamily: 'Cairo, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                 {s.n}
                 {s.star && <Star size={15} weight="fill" color="#f59e0b" />}
               </p>
-              <p className="auth-brand-stat-label" style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', fontFamily: 'Cairo, sans-serif' }}>{s.l}</p>
+              <p className="auth-brand-stat-label" style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', fontFamily: 'Cairo, sans-serif', textAlign: 'center' }}>{s.l}</p>
             </div>
           ))}
         </div>

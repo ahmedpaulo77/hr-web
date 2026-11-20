@@ -35,6 +35,22 @@
   --ov-rgb:    255, 255, 255;           /* overlay rgb (fills/borders) */
   --accent-2:  #c4b5fd;                 /* soft accent text           */
 
+  /* Landing accent text (icons / tag chips) */
+  --txt-violet:  #a78bfa;
+  --txt-emerald: #34d399;
+  --txt-amber:   #fbbf24;
+  --txt-cyan:    #22d3ee;
+  --tag-violet:  #c4b5fd;
+  --tag-emerald: #6ee7b7;
+  --tag-amber:   #fcd34d;
+  --tag-cyan:    #67e8f9;
+
+  /* HowItWorks card background */
+  --step-bg: rgba(52, 42, 92, 0.5);
+
+  /* CTA banner gradient */
+  --cta-bg: linear-gradient(135deg, rgba(109,40,217,0.18) 0%, rgba(52,42,92,0.6) 50%, rgba(245,158,11,0.06) 100%);
+
   --mesh-1:    rgba(109, 40, 217, 0.18);
   --mesh-2:    rgba(245, 158, 11, 0.09);
 }
@@ -55,6 +71,20 @@
   --fg-rgb:    27, 23, 49;
   --ov-rgb:    27, 23, 49;
   --accent-2:  #6d28d9;
+
+  /* Landing accent text — darker for light bg */
+  --txt-violet:  #7c3aed;
+  --txt-emerald: #059669;
+  --txt-amber:   #b45309;
+  --txt-cyan:    #0e7490;
+  --tag-violet:  #6d28d9;
+  --tag-emerald: #047857;
+  --tag-amber:   #b45309;
+  --tag-cyan:    #0e7490;
+
+  --step-bg: rgba(255, 255, 255, 0.7);
+
+  --cta-bg: linear-gradient(135deg, rgba(109,40,217,0.10) 0%, rgba(255,255,255,0.9) 50%, rgba(245,158,11,0.08) 100%);
 
   --mesh-1:    rgba(139, 92, 246, 0.14);
   --mesh-2:    rgba(245, 158, 11, 0.10);

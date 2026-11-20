@@ -53,7 +53,11 @@ export default function Navbar() {
         }}>
 
           {/* Logo — right side */}
-          <Link to="/" style={{
+          <Link to="/" onClick={() => {
+            setMobileOpen(false)
+            window.scrollTo({ top: 0, behavior: 'instant' })
+            document.querySelector('main')?.scrollTo({ top: 0, behavior: 'instant' })
+          }} style={{
             display: 'flex', alignItems: 'center', gap: 10,
             textDecoration: 'none', flexShrink: 0,
           }}>
@@ -65,7 +69,7 @@ export default function Navbar() {
             }}>
               <Buildings size={18} weight="duotone" color="white" />
             </div>
-            <span style={{ fontWeight: 900, fontSize: 17, color: 'var(--ink)', letterSpacing: '-0.3px' }}>
+            <span style={{ fontWeight: 900, fontSize: 19, color: 'var(--ink)', letterSpacing: '-0.3px' }}>
               HR <span className="text-gradient">Portal</span>
             </span>
           </Link>
@@ -74,14 +78,14 @@ export default function Navbar() {
           <div style={{
             display: 'none',
             alignItems: 'center',
-            gap: 2,
+            gap: 4,
           }} className="desktop-nav">
             {navLinks.map(link => (
               <NavLink key={link.path} to={link.path}
                 style={({ isActive }) => ({
-                  padding: '8px 16px',
+                  padding: '8px 12px',
                   borderRadius: 12,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: 600,
                   fontFamily: 'Cairo, sans-serif',
                   textDecoration: 'none',
@@ -160,12 +164,12 @@ export default function Navbar() {
 
       {/* Responsive styles */}
       <style>{`
-        @media (min-width: 768px) {
+        @media (min-width: 900px) {
           .desktop-nav { display: flex !important; }
           .desktop-cta { display: flex !important; }
           .mobile-menu-btn { display: none !important; }
         }
-        @media (max-width: 767px) {
+        @media (max-width: 899px) {
           .desktop-nav { display: none !important; }
           .desktop-cta { display: none !important; }
           .mobile-menu-btn { display: flex !important; }

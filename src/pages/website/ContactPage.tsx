@@ -12,7 +12,7 @@ export default function ContactPage() {
 
   return (
     <div className="pt-28 pb-20 px-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
         {/* Header */}
         <div className="text-center mb-16">
@@ -25,16 +25,16 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-8">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] items-stretch gap-6 lg:gap-8">
 
           {/* Info */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="flex h-full flex-col gap-5">
             {[
               { icon: EnvelopeSimple, label: 'البريد الإلكتروني', value: 'hello@hrportal.sa', color: 'violet' },
               { icon: Phone,         label: 'الهاتف',              value: '+966 50 000 0000',  color: 'emerald' },
               { icon: MapPin,        label: 'الموقع',              value: 'الرياض، المملكة العربية السعودية', color: 'amber' },
             ].map(item => (
-              <div key={item.label} className="glass border-gradient p-5 flex items-center gap-4">
+              <div key={item.label} className="glass border-gradient flex flex-1 items-center gap-4 p-5">
                 <div className={`w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0
                   ${item.color === 'violet'  ? 'bg-violet-500/15 border border-violet-500/20'  : ''}
                   ${item.color === 'emerald' ? 'bg-emerald-500/15 border border-emerald-500/20' : ''}
@@ -54,7 +54,7 @@ export default function ContactPage() {
             ))}
 
             {/* Working hours */}
-            <div className="glass border-gradient p-5">
+            <div className="glass border-gradient flex flex-1 flex-col justify-center p-5">
               <p className="text-xs text-white/35 font-black uppercase tracking-widest mb-4">ساعات العمل</p>
               {[
                 { day: 'الأحد — الخميس', time: '9:00ص — 6:00م' },
@@ -69,7 +69,7 @@ export default function ContactPage() {
           </div>
 
           {/* Form */}
-          <div className="lg:col-span-3">
+          <div>
             {sent ? (
               <div className="glass border-gradient p-12 text-center rounded-3xl h-full flex flex-col items-center justify-center">
                 <div className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center mx-auto mb-5">
