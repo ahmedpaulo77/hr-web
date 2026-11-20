@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useRequestsStore } from '@/store/requestsStore'
 import { requestsForEmployee, countByStatus } from '@/lib/requests'
@@ -8,7 +8,14 @@ import { getRequestType } from '@/data/requestTypes'
 import { iconForType } from '@/lib/requestIcons'
 import StatCard from '@/components/ui/StatCard'
 import Badge from '@/components/ui/Badge'
-import { FileText, Clock, CheckCircle, XCircle, Plus, ArrowLeft } from '@phosphor-icons/react'
+import { FileText, Clock, CheckCircle, XCircle, Plus, ArrowLeft, CalendarBlank, IdentificationCard, SquaresFour } from '@phosphor-icons/react'
+
+const homeTabs = [
+  { label: 'نظرة عامة', path: '/app/employee', icon: SquaresFour },
+  { label: 'الإجازات', path: '/app/employee/leave', icon: CalendarBlank },
+  { label: 'الحضور والتقويم', path: '/app/employee/attendance', icon: Clock },
+  { label: 'ملفي ومستنداتي', path: '/app/employee/profile', icon: IdentificationCard },
+]
 
 export default function EmployeeDashboard() {
   const { user } = useAuthStore()
@@ -24,6 +31,23 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="space-y-6 stagger">
+      <nav className="flex gap-2 overflow-x-auto border-b border-white/[0.08]" aria-label="تبويبات بوابة الموظف">
+        {homeTabs.map(tab => {
+          const Icon = tab.icon
+          return (
+            <NavLink
+              key={tab.path}
+              to={tab.path}
+              end
+              className={({ isActive }) => `flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-xs font-bold transition-colors ${
+                isActive ? 'border-violet-400 text-violet-300' : 'border-transparent text-white/40 hover:text-white/70'
+              }`}
+            >
+              <Icon size={16} weight="duotone" /> {tab.label}
+            </NavLink>
+          )
+        })}
+      </nav>
 
       {/* Welcome Banner */}
       <div className="relative rounded-3xl overflow-hidden p-7 animate-fade-up"

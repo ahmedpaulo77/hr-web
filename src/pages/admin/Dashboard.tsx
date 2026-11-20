@@ -81,6 +81,8 @@ export default function AdminDashboard() {
           <div className="p-3 space-y-1.5">
             {[
               { label: 'إدارة الموظفين',      path: '/app/admin/employees',     Icon: Users,    c: 'hover:bg-violet-500/10 hover:text-violet-300' },
+              { label: 'الأقسام والمسميات',    path: '/app/admin/organization',  Icon: Users,    c: 'hover:bg-violet-500/10 hover:text-violet-300' },
+              { label: 'الموافقات',             path: '/app/admin/approvals',    Icon: CheckCircle, c: 'hover:bg-violet-500/10 hover:text-violet-300' },
               { label: 'إدارة أنواع الطلبات',  path: '/app/admin/request-types', Icon: ListChecks, c: 'hover:bg-amber-500/10 hover:text-amber-300'  },
               { label: 'عرض التقارير',          path: '/app/admin/reports',       Icon: ChartBar, c: 'hover:bg-emerald-500/10 hover:text-emerald-300' },
               { label: 'إعدادات الشركة',        path: '/app/admin/settings',      Icon: GearSix,  c: 'hover:bg-cyan-500/10 hover:text-cyan-300'    },

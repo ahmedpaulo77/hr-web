@@ -12,6 +12,7 @@ export interface User {
   department?: string
   position?: string
   companyName?: string
+  companyId?: string
   companyLogo?: string
 }
 

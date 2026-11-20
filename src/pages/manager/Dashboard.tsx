@@ -4,6 +4,7 @@ import StatCard from '@/components/ui/StatCard'
 import { useAuthStore } from '@/store/authStore'
 import { useRequestsStore } from '@/store/requestsStore'
 import { requestsForManager, countByStatus } from '@/lib/requests'
+import { isAssignedApprover } from '@/lib/approvals'
 import { getTeam } from '@/data/employees'
 import { formatDate } from '@/lib/format'
 import { Users, Clock, CheckCircle, FileText, ArrowLeft, Check, X } from '@phosphor-icons/react'
@@ -18,10 +19,14 @@ export default function ManagerDashboard() {
 
   const team = useMemo(() => requestsForManager(requests, user?.id), [requests, user?.id])
   const counts = useMemo(() => countByStatus(team), [team])
-  const pending = useMemo(() => team.filter(r => r.status === 'pending').slice(0, 4), [team])
+  const approvalQueue = useMemo(
+    () => team.filter(request => isAssignedApprover(request, { id: user?.id, role: user?.role })),
+    [team, user?.id, user?.role],
+  )
+  const pending = approvalQueue.slice(0, 4)
   const members = getTeam(user?.id)
 
-  const actor = { name: user?.name ?? '', role: 'مدير' }
+  const actor = { id: user?.id, userRole: user?.role, name: user?.name ?? '', role: 'مدير' }
 
   return (
     <div className="space-y-6 stagger">
@@ -39,7 +44,7 @@ export default function ManagerDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger">
         <StatCard title="أعضاء الفريق"   value={members.length} icon={Users}       color="purple" />
-        <StatCard title="طلبات معلقة"    value={counts.pending}  icon={Clock}       color="amber"  />
+        <StatCard title="طلبات بانتظار دورك" value={approvalQueue.length} icon={Clock} color="amber" />
         <StatCard title="تمت الموافقة"   value={counts.approved} icon={CheckCircle} color="green"  />
         <StatCard title="إجمالي الطلبات" value={team.length}     icon={FileText}    color="cyan"   />
       </div>
@@ -50,7 +55,7 @@ export default function ManagerDashboard() {
           <div className="flex items-center gap-2.5">
             <h3 className="font-black text-white">طلبات تحتاج موافقتك</h3>
             <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-black px-2 py-0.5 rounded-full">
-              {counts.pending}
+              {approvalQueue.length}
             </span>
           </div>
           <button onClick={() => navigate('/app/manager/approvals')}

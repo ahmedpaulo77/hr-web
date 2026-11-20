@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { requestCategories } from '@/data/requestTypes'
 import type { FieldType, FormField, RequestCategory, RequestType } from '@/data/requestTypes'
+import type { ApprovalRole } from '@/types'
 import { useRequestTypesStore } from '@/store/requestTypesStore'
 import {
   Plus, Trash, PencilSimple, DotsSixVertical, ToggleLeft, ToggleRight,
   CaretDown, CaretUp, X, FloppyDisk, ArrowCounterClockwise, WarningCircle,
+  ArrowUp, ArrowDown,
 } from '@phosphor-icons/react'
 
 /* ─────────────────────────── shared bits ─────────────────────────── */
@@ -89,6 +91,12 @@ interface TypeForm {
   color: string
   needsAttachment: boolean
   attachmentHint: string
+  approvalFlow: ApprovalRole[]
+}
+
+const approvalRoleLabel: Record<ApprovalRole, string> = {
+  manager: 'المدير المباشر',
+  admin: 'الموارد البشرية',
 }
 
 function TypeEditor({
@@ -106,6 +114,7 @@ function TypeEditor({
     color: initial?.color ?? COLOR_PALETTE[0],
     needsAttachment: initial?.attachments?.required ?? false,
     attachmentHint: initial?.attachments?.hint ?? '',
+    approvalFlow: initial?.approvalFlow?.length ? initial.approvalFlow : ['manager'],
   })
   const [error, setError] = useState('')
 
@@ -170,6 +179,51 @@ function TypeEditor({
           <input value={form.attachmentHint} onChange={e => set('attachmentHint', e.target.value)} className="input" placeholder="ما الذي يجب على الموظف رفعه؟" />
         </Field>
       )}
+
+      <Field label="مسار الموافقات وترتيبها">
+        <div className="space-y-2">
+          {form.approvalFlow.map((role, index) => (
+            <div key={`${role}-${index}`} className="flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] p-2">
+              <span className="w-7 text-center text-xs font-black text-white/35">{index + 1}</span>
+              <select
+                value={role}
+                onChange={event => set('approvalFlow', form.approvalFlow.map((current, i) =>
+                  i === index ? event.target.value as ApprovalRole : current,
+                ))}
+                className="input flex-1"
+              >
+                <option value="manager">المدير المباشر</option>
+                <option value="admin">الموارد البشرية</option>
+              </select>
+              <button type="button" aria-label="تحريك المرحلة لأعلى" disabled={index === 0}
+                onClick={() => set('approvalFlow', form.approvalFlow.map((value, i) =>
+                  i === index - 1 ? role : i === index ? form.approvalFlow[index - 1] : value,
+                ))}
+                className="rounded-lg p-2 text-white/40 hover:bg-white/[0.06] disabled:opacity-20">
+                <ArrowUp size={15} />
+              </button>
+              <button type="button" aria-label="تحريك المرحلة لأسفل" disabled={index === form.approvalFlow.length - 1}
+                onClick={() => set('approvalFlow', form.approvalFlow.map((value, i) =>
+                  i === index + 1 ? role : i === index ? form.approvalFlow[index + 1] : value,
+                ))}
+                className="rounded-lg p-2 text-white/40 hover:bg-white/[0.06] disabled:opacity-20">
+                <ArrowDown size={15} />
+              </button>
+              <button type="button" aria-label="حذف مرحلة الموافقة" disabled={form.approvalFlow.length <= 1}
+                onClick={() => set('approvalFlow', form.approvalFlow.filter((_, i) => i !== index))}
+                className="rounded-lg p-2 text-red-400 hover:bg-red-500/10 disabled:opacity-20">
+                <Trash size={14} />
+              </button>
+            </div>
+          ))}
+          {form.approvalFlow.length < 2 && (
+            <button type="button" onClick={() => set('approvalFlow', [...form.approvalFlow, form.approvalFlow[0] === 'manager' ? 'admin' : 'manager'])}
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-bold text-violet-300 hover:bg-violet-500/10">
+              <Plus size={13} weight="bold" /> إضافة مرحلة ({approvalRoleLabel[form.approvalFlow[0] === 'manager' ? 'admin' : 'manager']})
+            </button>
+          )}
+        </div>
+      </Field>
     </Modal>
   )
 }
@@ -360,6 +414,7 @@ export default function RequestTypes() {
       description: form.description.trim(),
       category: form.category,
       color: form.color,
+      approvalFlow: form.approvalFlow,
       attachments: form.needsAttachment
         ? { required: true, hint: form.attachmentHint.trim() || 'مرفقات مطلوبة' }
         : undefined,

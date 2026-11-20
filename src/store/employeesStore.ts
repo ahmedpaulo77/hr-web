@@ -80,7 +80,18 @@ export const useEmployeesStore = create<EmployeesState>()(
     }),
     {
       name: 'hr-employees',
-      version: 1,
+      version: 2,
+      migrate: persistedState => {
+        const saved = persistedState as Partial<EmployeesState>
+        const salaryDefaults = new Map(seedEmployees.map(employee => [employee.id, employee.monthlySalary]))
+        return {
+          ...saved,
+          employees: (saved.employees ?? seedEmployees).map(employee => ({
+            ...employee,
+            monthlySalary: employee.monthlySalary ?? salaryDefaults.get(employee.id),
+          })),
+        }
+      },
       onRehydrateStorage: () => state => {
         if (state) sync(state.employees)
       },

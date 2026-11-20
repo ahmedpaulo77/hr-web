@@ -5,6 +5,7 @@
 ════════════════════════════════════════ */
 
 export type UserRole = 'employee' | 'manager' | 'admin'
+export type ApprovalRole = Extract<UserRole, 'manager' | 'admin'>
 
 export type RequestStatus =
   | 'pending'
@@ -16,10 +17,18 @@ export type RequestStatus =
 export interface Dependent {
   id: string
   name: string
+  fatherName?: string
+  grandfatherName?: string
+  localName?: string
   relation: 'زوجة' | 'ابن' | 'ابنة' | 'والد' | 'والدة'
   birthDate: string // ISO
   gender: 'ذكر' | 'أنثى'
   idNumber: string
+  emergencyContactName?: string
+  emergencyContactPhone?: string
+  email?: string
+  phone?: string
+  address?: string
 }
 
 export interface Employee {
@@ -33,6 +42,7 @@ export interface Employee {
   location: string
   nationality: string
   hireDate: string // ISO
+  monthlySalary?: number
   managerId: string | null
   role: UserRole
   status: 'active' | 'inactive'
@@ -56,6 +66,8 @@ export interface TimelineEvent {
 }
 
 export interface Actor {
+  id?: string
+  userRole?: UserRole
   name: string
   role: string
 }
@@ -79,6 +91,8 @@ export interface RequestRecord {
   attachments: Attachment[]
   timeline: TimelineEvent[]
   rejectionReason?: string
+  approvalFlow?: ApprovalRole[]
+  approvalStage?: number
 }
 
 export interface NewRequestInput {
@@ -88,4 +102,5 @@ export interface NewRequestInput {
   submittedBy: Actor
   values: Record<string, FieldValue>
   attachments: Attachment[]
+  approvalFlow?: ApprovalRole[]
 }

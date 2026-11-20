@@ -5,6 +5,7 @@ import {
 } from '@phosphor-icons/react'
 import { useEmployeesStore } from '@/store/employeesStore'
 import type { NewEmployee } from '@/store/employeesStore'
+import { useOrganizationStore } from '@/store/organizationStore'
 import type { UserRole } from '@/types'
 import { formatDate } from '@/lib/format'
 
@@ -22,7 +23,6 @@ const roleLabel: Record<UserRole, string> = {
   admin: 'موارد بشرية',
 }
 
-const DEPARTMENTS = ['تقنية المعلومات', 'الموارد البشرية', 'المالية', 'المبيعات']
 const LOCATIONS = ['الرياض - المقر الرئيسي', 'جدة - فرع الغربية', 'الدمام - فرع الشرقية']
 
 /* ─────────────────────────── modal ─────────────────────────── */
@@ -74,6 +74,7 @@ interface EmployeeForm {
   location: string
   nationality: string
   hireDate: string
+  monthlySalary: number
   managerId: string
   role: UserRole
   status: 'active' | 'inactive'
@@ -83,11 +84,12 @@ const emptyForm = (): EmployeeForm => ({
   name: '',
   email: '',
   employeeNumber: '',
-  department: DEPARTMENTS[0],
+  department: '',
   position: '',
   location: LOCATIONS[0],
   nationality: 'سعودي',
   hireDate: new Date().toISOString().slice(0, 10),
+  monthlySalary: 0,
   managerId: '',
   role: 'employee',
   status: 'active',
@@ -103,6 +105,8 @@ function EmployeeEditor({
   onClose: () => void
   onSubmit: (form: EmployeeForm) => void
 }) {
+  const departments = useOrganizationStore(state => state.departments)
+  const positions = useOrganizationStore(state => state.positions)
   const [form, setForm] = useState<EmployeeForm>(initial?.form ?? emptyForm())
   const [error, setError] = useState('')
 
@@ -113,6 +117,9 @@ function EmployeeEditor({
     const email = form.email.trim().toLowerCase()
     if (!email) { setError('البريد الإلكتروني مطلوب'); return }
     if (existingEmails.includes(email)) { setError('هذا البريد الإلكتروني مستخدم بالفعل'); return }
+    if (!form.department || !departments.includes(form.department)) { setError('اختر قسماً من القائمة'); return }
+    if (!form.position || !positions.includes(form.position)) { setError('اختر مسمى وظيفياً من القائمة'); return }
+    if (!Number.isFinite(form.monthlySalary) || form.monthlySalary <= 0) { setError('الراتب الشهري يجب أن يكون أكبر من صفر'); return }
     onSubmit({ ...form, name: form.name.trim(), email, employeeNumber: form.employeeNumber.trim(), position: form.position.trim() })
   }
 
@@ -148,11 +155,15 @@ function EmployeeEditor({
       <div className="grid grid-cols-2 gap-3">
         <Field label="القسم">
           <select value={form.department} onChange={e => set('department', e.target.value)} className="input">
-            {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+            <option value="">اختر القسم...</option>
+            {departments.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </Field>
         <Field label="المسمى الوظيفي">
-          <input value={form.position} onChange={e => set('position', e.target.value)} className="input" placeholder="مثال: مطور برمجيات" />
+          <select value={form.position} onChange={e => set('position', e.target.value)} className="input">
+            <option value="">اختر المسمى الوظيفي...</option>
+            {positions.map(position => <option key={position} value={position}>{position}</option>)}
+          </select>
         </Field>
       </div>
 
@@ -171,6 +182,12 @@ function EmployeeEditor({
         <Field label="تاريخ التعيين">
           <input type="date" value={form.hireDate} onChange={e => set('hireDate', e.target.value)} className="input" />
         </Field>
+        <Field label="الراتب الشهري">
+          <input type="number" min="1" value={form.monthlySalary || ''} onChange={e => set('monthlySalary', Number(e.target.value))} className="input" placeholder="بالريال السعودي" />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
         <Field label="المدير المباشر">
           <select value={form.managerId} onChange={e => set('managerId', e.target.value)} className="input">
             <option value="">— بدون مدير —</option>
@@ -270,6 +287,7 @@ export default function Employees() {
           location: targetEmployee.location,
           nationality: targetEmployee.nationality,
           hireDate: targetEmployee.hireDate,
+          monthlySalary: targetEmployee.monthlySalary ?? 0,
           managerId: targetEmployee.managerId ?? '',
           role: targetEmployee.role,
           status: targetEmployee.status,
@@ -287,6 +305,7 @@ export default function Employees() {
       location: form.location,
       nationality: form.nationality,
       hireDate: form.hireDate,
+      monthlySalary: form.monthlySalary,
       managerId: form.managerId || null,
       role: form.role,
       status: form.status,

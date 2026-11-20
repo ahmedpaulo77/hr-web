@@ -16,6 +16,7 @@ export default function EmployeePicker({ managerId, onSelect }: Props) {
     const q = search.trim().toLowerCase()
     return employees
       .filter(e => e.status === 'active')
+      .filter(e => !managerId || (e.managerId === managerId && e.role === 'employee'))
       .filter(e =>
         !q ||
         e.name.toLowerCase().includes(q) ||
@@ -23,7 +24,7 @@ export default function EmployeePicker({ managerId, onSelect }: Props) {
         e.employeeNumber.toLowerCase().includes(q) ||
         e.department.toLowerCase().includes(q),
       )
-  }, [search, employees])
+  }, [search, employees, managerId])
 
   return (
     <div className="space-y-5 animate-fade-up max-w-4xl mx-auto">
@@ -95,7 +96,8 @@ export default function EmployeePicker({ managerId, onSelect }: Props) {
 
       <p className="flex items-center gap-2 text-xs text-white/25">
         <UsersThree size={14} weight="duotone" className="text-violet-400/60" />
-        تظهر هنا كل الموظفين النشطين. الطلبات التي تقدّمها ستُسجل باسم الموظف المختار.
+        {managerId ? 'تظهر هنا الموظفون النشطون في فريقك فقط.' : 'تظهر هنا كل الموظفين النشطين.'}
+        {' '}الطلبات التي تقدّمها ستُسجل باسم الموظف المختار.
       </p>
     </div>
   )

@@ -1,7 +1,8 @@
 import { Outlet, Navigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { Buildings, CheckCircle, Star } from '@phosphor-icons/react'
+import { CheckCircle, Star } from '@phosphor-icons/react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import CompanyLogo from '@/components/ui/CompanyLogo'
 
 export default function AuthLayout() {
   const { user } = useAuthStore()
@@ -60,14 +61,7 @@ export default function AuthLayout() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           textDecoration: 'none', position: 'relative', zIndex: 1,
         }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 14,
-            background: 'linear-gradient(135deg,#8b5cf6,#6d28d9)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(109,40,217,0.5)',
-          }}>
-            <Buildings size={20} weight="duotone" color="white" />
-          </div>
+          <CompanyLogo size={40} />
           <span style={{ fontWeight: 900, fontSize: 20, color: 'var(--ink)' }}>
             HR <span className="text-gradient">Portal</span>
           </span>
@@ -170,6 +164,10 @@ export default function AuthLayout() {
         zIndex: 10,
       }}>
         <div style={{ width: '100%', maxWidth: 420, direction: 'rtl' }}>
+          <Link to="/" className="mb-5 flex items-center justify-center gap-2 lg:hidden">
+            <CompanyLogo size={34} />
+            <span className="font-black text-white">HR Portal</span>
+          </Link>
           <Outlet />
         </div>
       </div>

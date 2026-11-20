@@ -1,10 +1,13 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '@/components/ui/Sidebar'
 import TopBar from '@/components/ui/TopBar'
-import { SquaresFour, FileText, PlusCircle, UsersThree } from '@phosphor-icons/react'
+import { SquaresFour, FileText, PlusCircle, UsersThree, CalendarBlank, IdentificationCard } from '@phosphor-icons/react'
 
 const navItems = [
   { label: 'الرئيسية',  path: '/app/employee',              icon: SquaresFour },
+  { label: 'الإجازات',  path: '/app/employee/leave',        icon: CalendarBlank },
+  { label: 'الحضور والتقويم', path: '/app/employee/attendance', icon: CalendarBlank },
+  { label: 'ملفي ومستنداتي', path: '/app/employee/profile',  icon: IdentificationCard },
   { label: 'طلباتي',    path: '/app/employee/requests',     icon: FileText    },
   { label: 'التابعون',  path: '/app/employee/dependents',   icon: UsersThree  },
   { label: 'طلب جديد',  path: '/app/employee/requests/new', icon: PlusCircle  },
@@ -12,6 +15,9 @@ const navItems = [
 
 const titles: Record<string, { title: string; subtitle: string }> = {
   '/app/employee':              { title: 'الرئيسية',  subtitle: 'مرحباً بك في بوابة الموظفين' },
+  '/app/employee/leave':        { title: 'الإجازات',  subtitle: 'رصيدك وطلبات الإجازات' },
+  '/app/employee/attendance':   { title: 'الحضور والتقويم', subtitle: 'الورديات والحضور والانصراف' },
+  '/app/employee/profile':      { title: 'ملفي ومستنداتي', subtitle: 'بياناتك ومستنداتك الوظيفية' },
   '/app/employee/requests':     { title: 'طلباتي',    subtitle: 'تابع جميع طلباتك' },
   '/app/employee/dependents':   { title: 'التابعون',  subtitle: 'إدارة التابعين المسجلين' },
   '/app/employee/requests/new': { title: 'طلب جديد',  subtitle: 'اختر نوع الطلب' },

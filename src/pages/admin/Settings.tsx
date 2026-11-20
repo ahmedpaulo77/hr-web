@@ -1,17 +1,42 @@
 import { useState } from 'react'
 import { FloppyDisk, CheckCircle } from '@phosphor-icons/react'
-import { useSettingsStore } from '@/store/settingsStore'
+import { DEFAULT_BRANDING, useSettingsStore } from '@/store/settingsStore'
+import type { BrandingSettings } from '@/store/settingsStore'
+import { useTenantId } from '@/lib/tenant'
 
 export default function Settings() {
   const { company: savedCompany, notifications: toggles, saveCompany, toggleNotification } = useSettingsStore()
+  const companyId = useTenantId()
+  const branding = useSettingsStore(state => state.brandingByCompany[companyId] ?? DEFAULT_BRANDING)
+  const saveBranding = useSettingsStore(state => state.saveBranding)
 
   const [company, setCompany] = useState(savedCompany)
+  const [brand, setBrand] = useState<BrandingSettings>(branding)
   const [saved, setSaved] = useState(false)
+  const [logoError, setLogoError] = useState('')
 
   const handleSave = () => {
     saveCompany(company)
+    saveBranding(companyId, brand)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
+  }
+
+  const handleLogo = (file?: File) => {
+    setLogoError('')
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setLogoError('اختر ملف صورة صالحاً.')
+      return
+    }
+    if (file.size > 1_500_000) {
+      setLogoError('حجم الشعار يجب ألا يتجاوز 1.5 ميجابايت.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => setBrand(current => ({ ...current, logoDataUrl: String(reader.result ?? '') }))
+    reader.onerror = () => setLogoError('تعذر قراءة الصورة، حاول مرة أخرى.')
+    reader.readAsDataURL(file)
   }
 
   const notifSettings = [
@@ -47,6 +72,52 @@ export default function Settings() {
               />
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="glass border-gradient overflow-hidden rounded-2xl">
+        <div className="border-b border-white/[0.06] px-5 py-4">
+          <h3 className="font-black text-white">هوية الشركة</h3>
+          <p className="mt-1 text-xs text-white/35">تظهر الهوية لمستخدمي الشركة الحالية فقط.</p>
+        </div>
+        <div className="space-y-5 p-6">
+          <div className="flex items-center gap-4">
+            <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
+              {brand.logoDataUrl
+                ? <img src={brand.logoDataUrl} alt="معاينة شعار الشركة" className="h-full w-full object-contain p-1" />
+                : <span className="text-xs font-bold text-white/30">بدون شعار</span>}
+            </div>
+            <div className="flex-1">
+              <label className="mb-2 block text-xs font-black uppercase tracking-wider text-white/40">رفع صورة اللوجو</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={event => handleLogo(event.target.files?.[0])}
+                className="block w-full text-xs text-white/50 file:ml-3 file:rounded-lg file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:font-bold file:text-white/70"
+              />
+              {brand.logoDataUrl && (
+                <button type="button" onClick={() => setBrand(current => ({ ...current, logoDataUrl: '' }))}
+                  className="mt-2 text-xs font-bold text-red-400 hover:text-red-300">
+                  إزالة الشعار
+                </button>
+              )}
+              {logoError && <p className="mt-2 text-xs font-bold text-red-400">{logoError}</p>}
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <label htmlFor="brand-primary-color" className="text-xs font-black uppercase tracking-wider text-white/40">اللون الرئيسي</label>
+            <input
+              id="brand-primary-color"
+              type="color"
+              value={brand.primaryColor}
+              onChange={event => setBrand(current => ({ ...current, primaryColor: event.target.value }))}
+              className="h-10 w-14 cursor-pointer rounded-lg border border-white/10 bg-transparent p-1"
+            />
+            <span className="font-mono text-xs text-white/40">{brand.primaryColor}</span>
+            <span className="rounded-xl px-4 py-2 text-xs font-black text-white" style={{ background: brand.primaryColor }}>
+              معاينة الزر
+            </span>
+          </div>
         </div>
       </div>
 

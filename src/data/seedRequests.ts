@@ -128,5 +128,14 @@ export function buildSeedRequests(): RequestRecord[] {
       values: { period: daysAgo(0).slice(0, 10), classes_count: '12', school_name: 'مدارس الرياض' },
       note: 'بدل حصص شهر نوفمبر',
     }),
+    build({
+      n: 13, typeId: 'leave-annual', employeeId: 'employee@hr.com', status: 'approved', days: 45,
+      values: {
+        start_date: daysAgo(45).slice(0, 10),
+        end_date: daysAgo(40).slice(0, 10),
+        days_count: '5',
+        reason: 'إجازة سنوية',
+      },
+    }),
   ]
 }

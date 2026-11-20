@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { tenantIdFromLocation } from '@/lib/tenant'
 import { Eye, EyeSlash, ArrowLeft, SpinnerGap, User, Briefcase, GearSix, WarningCircle } from '@phosphor-icons/react'
 
 const demoAccounts = [
@@ -25,7 +26,16 @@ export default function LoginPage() {
     await new Promise(r => setTimeout(r, 900))
     const acc = demoAccounts.find(a => a.email === email && a.password === password)
     if (!acc) { setError('البريد الإلكتروني أو كلمة المرور غير صحيحة'); setLoading(false); return }
-    login({ id: acc.email, name: acc.name, email: acc.email, role: acc.role, department: acc.dept, position: acc.pos, companyName: 'مجموعة النخبة' }, 'demo-token')
+    login({
+      id: acc.email,
+      name: acc.name,
+      email: acc.email,
+      role: acc.role,
+      department: acc.dept,
+      position: acc.pos,
+      companyId: tenantIdFromLocation(),
+      companyName: 'مجموعة النخبة',
+    }, 'demo-token')
     navigate('/app')
   }
 

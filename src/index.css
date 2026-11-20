@@ -479,3 +479,45 @@
 @keyframes ping {
   75%,100% { transform: scale(1.9); opacity: 0; }
 }
+
+:root {
+  --brand-primary: #7c3aed;
+  --brand-primary-rgb: 124, 58, 237;
+}
+
+.btn-primary {
+  background: var(--brand-primary) !important;
+  box-shadow: 0 4px 22px rgba(var(--brand-primary-rgb), 0.35);
+}
+.btn-primary:hover {
+  box-shadow: 0 8px 32px rgba(var(--brand-primary-rgb), 0.48);
+}
+.nav-active {
+  background: rgba(var(--brand-primary-rgb), 0.16) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.38) !important;
+  color: var(--brand-primary) !important;
+}
+.nav-active svg,
+.text-violet-300,
+.text-violet-400,
+.text-violet-500 {
+  color: var(--brand-primary) !important;
+}
+.bg-violet-600 {
+  background-color: var(--brand-primary) !important;
+}
+.text-gradient {
+  background: linear-gradient(120deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary), white 28%), #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+[data-theme="light"] .text-violet-300,
+[data-theme="light"] .text-violet-400,
+[data-theme="light"] .text-violet-500 {
+  color: var(--brand-primary) !important;
+}
+[data-theme="light"] .text-gradient {
+  background: linear-gradient(120deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary), #1b1731 20%), #b45309);
+  -webkit-background-clip: text;
+  background-clip: text;
+}

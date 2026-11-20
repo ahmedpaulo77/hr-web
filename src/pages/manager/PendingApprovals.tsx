@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Check, X, Eye, CheckCircle } from '@phosphor-icons/react'
 import { useAuthStore } from '@/store/authStore'
 import { useRequestsStore } from '@/store/requestsStore'
-import { requestsForManager } from '@/lib/requests'
+import { currentApprovalRole, isAssignedApprover } from '@/lib/approvals'
 import { getEmployeeByEmail } from '@/data/employees'
 import { formatDate, daysBetween } from '@/lib/format'
 import ReasonDialog from '@/components/ui/ReasonDialog'
@@ -16,18 +16,23 @@ export default function PendingApprovals() {
   const [target, setTarget] = useState<{ request: RequestRecord; action: 'approve' | 'reject' } | null>(null)
 
   const pending = useMemo(
-    () => requestsForManager(requests, user?.id).filter(r => r.status === 'pending'),
-    [requests, user?.id],
+    () => requests.filter(request => isAssignedApprover(request, { id: user?.id, role: user?.role })),
+    [requests, user?.id, user?.role],
   )
 
-  const actor = { name: user?.name ?? '', role: 'مدير' }
+  const actor = {
+    id: user?.id,
+    userRole: user?.role,
+    name: user?.name ?? '',
+    role: user?.role === 'admin' ? 'موارد بشرية' : 'مدير',
+  }
 
   if (pending.length === 0) {
     return (
       <div className="glass border-gradient p-16 text-center rounded-3xl animate-fade-up max-w-lg mx-auto">
         <CheckCircle size={48} weight="duotone" className="text-emerald-400/70 mx-auto mb-4" />
-        <p className="text-xl font-black text-white mb-2">لا توجد طلبات معلقة</p>
-        <p className="text-white/35 text-sm">تمت معالجة جميع الطلبات</p>
+        <p className="text-xl font-black text-white mb-2">لا توجد طلبات بانتظار دورك</p>
+        <p className="text-white/35 text-sm">ستظهر هنا الطلبات المسندة إليك في مرحلة الموافقة الحالية.</p>
       </div>
     )
   }
@@ -58,6 +63,9 @@ export default function PendingApprovals() {
                   </div>
                   <p className="text-sm text-white/35">
                     {req.department} · {req.typeTitle} · {formatDate(req.submittedAt)}
+                  </p>
+                  <p className="mt-1 text-[11px] font-bold text-violet-300">
+                    مرحلتك: {currentApprovalRole(req) === 'admin' ? 'الموارد البشرية' : 'المدير المباشر'}
                   </p>
                   <p className="text-[11px] text-white/20 font-mono mt-0.5">{req.id}</p>
                 </div>

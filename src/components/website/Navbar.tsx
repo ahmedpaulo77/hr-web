@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { List, X, ArrowLeft, Buildings } from '@phosphor-icons/react'
+import { List, X, ArrowLeft } from '@phosphor-icons/react'
 import { useAuthStore } from '@/store/authStore'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import CompanyLogo from '@/components/ui/CompanyLogo'
 
 const navLinks = [
   { label: 'المميزات',   path: '/features' },
@@ -61,14 +62,7 @@ export default function Navbar() {
             display: 'flex', alignItems: 'center', gap: 10,
             textDecoration: 'none', flexShrink: 0,
           }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: 12,
-              background: 'linear-gradient(135deg,#8b5cf6,#6d28d9)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 16px rgba(109,40,217,0.5)',
-            }}>
-              <Buildings size={18} weight="duotone" color="white" />
-            </div>
+            <CompanyLogo size={36} />
             <span style={{ fontWeight: 900, fontSize: 19, color: 'var(--ink)', letterSpacing: '-0.3px' }}>
               HR <span className="text-gradient">Portal</span>
             </span>

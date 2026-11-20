@@ -1,13 +1,15 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '@/components/ui/Sidebar'
 import TopBar from '@/components/ui/TopBar'
-import { SquaresFour, FileText, Users, ChartBar, Gear, ClipboardText } from '@phosphor-icons/react'
+import { SquaresFour, FileText, Users, ChartBar, Gear, ClipboardText, Buildings } from '@phosphor-icons/react'
 
 const navItems = [
   { label: 'الرئيسية',       path: '/app/admin',                icon: SquaresFour },
   { label: 'الطلبات',        path: '/app/admin/requests',       icon: ClipboardText },
   { label: 'أنواع الطلبات',  path: '/app/admin/request-types',  icon: FileText    },
   { label: 'الموظفون',       path: '/app/admin/employees',       icon: Users       },
+  { label: 'الأقسام والمسميات', path: '/app/admin/organization', icon: Buildings   },
+  { label: 'الموافقات',      path: '/app/admin/approvals',      icon: ClipboardText },
   { label: 'التقارير',       path: '/app/admin/reports',         icon: ChartBar    },
   { label: 'الإعدادات',      path: '/app/admin/settings',        icon: Gear        },
 ]
@@ -17,6 +19,8 @@ const titles: Record<string, { title: string; subtitle: string }> = {
   '/app/admin/requests':      { title: 'الطلبات',         subtitle: 'جميع طلبات الموظفين' },
   '/app/admin/request-types': { title: 'أنواع الطلبات',   subtitle: 'تخصيص وإدارة الطلبات' },
   '/app/admin/employees':     { title: 'الموظفون',         subtitle: 'إدارة بيانات الموظفين' },
+  '/app/admin/organization': { title: 'الأقسام والمسميات', subtitle: 'إدارة القوائم الوظيفية' },
+  '/app/admin/approvals':     { title: 'الموافقات',        subtitle: 'الطلبات التي تنتظر دور الموارد البشرية' },
   '/app/admin/reports':       { title: 'التقارير',         subtitle: 'تقارير وإحصائيات' },
   '/app/admin/settings':      { title: 'الإعدادات',        subtitle: 'ضبط إعدادات الشركة' },
 }

@@ -1,5 +1,5 @@
 import type { Employee } from '@/types'
-import { User, IdentificationCard, Buildings, MapPin, CalendarBlank } from '@phosphor-icons/react'
+import { User, IdentificationCard, Buildings, MapPin, CalendarBlank, CurrencyCircleDollar } from '@phosphor-icons/react'
 import { formatDate } from '@/lib/format'
 
 interface Props {
@@ -13,6 +13,9 @@ const items = (employee: Employee) => [
   { icon: Buildings,          label: 'القسم',       value: employee.department },
   { icon: User,               label: 'المسمى الوظيفي', value: employee.position },
   { icon: MapPin,             label: 'الموقع',      value: employee.location },
+  { icon: CurrencyCircleDollar, label: 'الراتب الشهري', value: employee.monthlySalary
+    ? new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', maximumFractionDigits: 0 }).format(employee.monthlySalary)
+    : 'غير محدد' },
   { icon: CalendarBlank,      label: 'تاريخ التعيين', value: formatDate(employee.hireDate) },
   { icon: IdentificationCard, label: 'الجنسية',     value: employee.nationality },
 ]

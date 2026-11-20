@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import ScrollToTop from '@/components/ScrollToTop'
 import PageLoader from '@/components/ui/PageLoader'
+import BrandTheme from '@/components/ui/BrandTheme'
 
 // Layouts stay eager — they wrap every route.
 import LandingLayout from '@/layouts/LandingLayout'
@@ -30,11 +31,15 @@ const EmployeeDashboard = lazy(() => import('@/pages/employee/Dashboard'))
 const MyRequests = lazy(() => import('@/pages/employee/MyRequests'))
 const NewRequest = lazy(() => import('@/pages/employee/NewRequest'))
 const Dependents = lazy(() => import('@/pages/employee/Dependents'))
+const LeaveCenter = lazy(() => import('@/pages/employee/LeaveCenter'))
+const EmployeeProfile = lazy(() => import('@/pages/employee/EmployeeProfile'))
+const AttendancePage = lazy(() => import('@/pages/shared/AttendancePage'))
 
 // Manager Pages
 const ManagerDashboard = lazy(() => import('@/pages/manager/Dashboard'))
 const PendingApprovals = lazy(() => import('@/pages/manager/PendingApprovals'))
 const TeamRequests = lazy(() => import('@/pages/manager/TeamRequests'))
+const ManagerTeamOperations = lazy(() => import('@/pages/manager/TeamOperations'))
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('@/pages/admin/Dashboard'))
@@ -43,6 +48,7 @@ const RequestTypes = lazy(() => import('@/pages/admin/RequestTypes'))
 const Employees = lazy(() => import('@/pages/admin/Employees'))
 const Reports = lazy(() => import('@/pages/admin/Reports'))
 const Settings = lazy(() => import('@/pages/admin/Settings'))
+const OrganizationCatalog = lazy(() => import('@/pages/admin/OrganizationCatalog'))
 
 function ProtectedRoute({ children, role }: { children: React.ReactNode; role?: string }) {
   const { user } = useAuthStore()
@@ -57,6 +63,7 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
+      <BrandTheme />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* ═══ PUBLIC WEBSITE ═══ */}
@@ -92,13 +99,18 @@ export default function App() {
             <Route path="/app/employee/requests/new/:type" element={<NewRequest />} />
             <Route path="/app/employee/requests/:id" element={<RequestDetails />} />
             <Route path="/app/employee/dependents"   element={<Dependents />} />
+            <Route path="/app/employee/leave"        element={<LeaveCenter />} />
+            <Route path="/app/employee/attendance"   element={<AttendancePage />} />
+            <Route path="/app/employee/profile"      element={<EmployeeProfile />} />
           </Route>
 
           {/* ═══ MANAGER ═══ */}
           <Route element={<ProtectedRoute role="manager"><ManagerLayout /></ProtectedRoute>}>
             <Route path="/app/manager"               element={<ManagerDashboard />} />
             <Route path="/app/manager/approvals"     element={<PendingApprovals />} />
-            <Route path="/app/manager/team"          element={<TeamRequests />} />
+<Route path="/app/manager/team"         element={<TeamRequests />} />
+            <Route path="/app/manager/team-operations" element={<ManagerTeamOperations />} />
+            <Route path="/app/manager/attendance" element={<AttendancePage teamMode />} />
             <Route path="/app/manager/requests/new"  element={<NewRequest />} />
             <Route path="/app/manager/requests/new/:type" element={<NewRequest />} />
             <Route path="/app/manager/requests/:id" element={<RequestDetails />} />
@@ -108,8 +120,10 @@ export default function App() {
           <Route element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
             <Route path="/app/admin"                 element={<AdminDashboard />} />
             <Route path="/app/admin/requests"        element={<AdminRequests />} />
+            <Route path="/app/admin/approvals"      element={<PendingApprovals />} />
             <Route path="/app/admin/requests/:id"    element={<RequestDetails />} />
             <Route path="/app/admin/request-types"   element={<RequestTypes />} />
+            <Route path="/app/admin/organization"    element={<OrganizationCatalog />} />
             <Route path="/app/admin/employees"       element={<Employees />} />
             <Route path="/app/admin/reports"         element={<Reports />} />
             <Route path="/app/admin/settings"        element={<Settings />} />

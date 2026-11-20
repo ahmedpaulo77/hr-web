@@ -4,8 +4,9 @@ import { useState } from 'react'
 import {
   SquaresFour, FileText, PlusCircle, CheckCircle,
   Users, ChartBar, Gear, SignOut, List, X,
-  CaretRight, Buildings,
+  CaretRight,
 } from '@phosphor-icons/react'
+import CompanyLogo from '@/components/ui/CompanyLogo'
 
 interface NavItem {
   label: string
@@ -46,14 +47,7 @@ export default function Sidebar({ navItems }: SidebarProps) {
       }}>
         {!collapsed && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{
-              width: 34, height: 34, borderRadius: 10,
-              background: 'linear-gradient(135deg,#8b5cf6,#6d28d9)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 14px rgba(109,40,217,0.5)', flexShrink: 0,
-            }}>
-              <Buildings size={16} weight="duotone" color="white" />
-            </div>
+            <CompanyLogo size={34} />
             <div>
               <p style={{ fontWeight: 900, fontSize: 13, color: 'var(--ink)', lineHeight: 1 }}>HR Portal</p>
               <p style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
@@ -134,7 +128,7 @@ export default function Sidebar({ navItems }: SidebarProps) {
               fontFamily: 'Cairo, sans-serif',
               transition: 'all 0.18s',
               justifyContent: collapsed ? 'center' : 'flex-start',
-              color: isActive ? '#c4b5fd' : 'rgba(var(--fg-rgb),0.5)',
+              color: isActive ? 'var(--brand-primary)' : 'rgba(var(--fg-rgb),0.5)',
               border: '1px solid transparent',
             })}
             onMouseEnter={e => {
@@ -158,7 +152,7 @@ export default function Sidebar({ navItems }: SidebarProps) {
                 <item.icon
                   size={19}
                   weight={isActive ? 'duotone' : 'regular'}
-                  color={isActive ? '#c4b5fd' : 'rgba(var(--fg-rgb),0.4)'}
+                  color={isActive ? 'var(--brand-primary)' : 'rgba(var(--fg-rgb),0.4)'}
                   style={{ flexShrink: 0 }}
                 />
                 {!collapsed && <span>{item.label}</span>}
@@ -229,7 +223,7 @@ export default function Sidebar({ navItems }: SidebarProps) {
           display: 'none',
           position: 'fixed', bottom: 24, right: 24, zIndex: 40,
           width: 52, height: 52, borderRadius: 16,
-          background: 'linear-gradient(135deg,#8b5cf6,#6d28d9)',
+          background: 'var(--brand-primary)',
           border: 'none', cursor: 'pointer',
           alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 6px 24px rgba(109,40,217,0.6)',

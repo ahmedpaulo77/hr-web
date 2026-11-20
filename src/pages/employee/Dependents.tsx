@@ -19,10 +19,18 @@ const relationTone: Record<Dependent['relation'], string> = {
 
 const emptyForm = {
   name: '',
+  fatherName: '',
+  grandfatherName: '',
+  localName: '',
   relation: 'ابن' as Dependent['relation'],
   birthDate: '',
   gender: 'ذكر' as Dependent['gender'],
   idNumber: '',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  email: '',
+  phone: '',
+  address: '',
 }
 
 export default function Dependents() {
@@ -48,8 +56,13 @@ export default function Dependents() {
   const handleSave = () => {
     const found: Record<string, string> = {}
     if (!form.name.trim()) found.name = 'اسم التابع مطلوب'
+    if (!form.fatherName.trim()) found.fatherName = 'اسم الأب مطلوب'
+    if (!form.grandfatherName.trim()) found.grandfatherName = 'اسم الجد مطلوب'
     if (!form.birthDate) found.birthDate = 'تاريخ الميلاد مطلوب'
     if (!/^\d{10}$/.test(form.idNumber)) found.idNumber = 'رقم الهوية يجب أن يكون 10 أرقام'
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) found.email = 'صيغة البريد الإلكتروني غير صحيحة'
+    if (form.phone && !/^[+()\d\s-]{7,20}$/.test(form.phone)) found.phone = 'راجع رقم الهاتف'
+    if (form.emergencyContactPhone && !/^[+()\d\s-]{7,20}$/.test(form.emergencyContactPhone)) found.emergencyContactPhone = 'راجع رقم هاتف الطوارئ'
     if (Object.keys(found).length) {
       setErrors(found)
       return
@@ -57,10 +70,18 @@ export default function Dependents() {
 
     add(user!.id, {
       name: form.name.trim(),
+      fatherName: form.fatherName.trim(),
+      grandfatherName: form.grandfatherName.trim(),
+      localName: form.localName.trim(),
       relation: form.relation,
       birthDate: form.birthDate,
       gender: form.gender,
       idNumber: form.idNumber,
+      emergencyContactName: form.emergencyContactName.trim(),
+      emergencyContactPhone: form.emergencyContactPhone.trim(),
+      email: form.email.trim().toLowerCase(),
+      phone: form.phone.trim(),
+      address: form.address.trim(),
     })
 
     setForm(emptyForm)
@@ -117,6 +138,27 @@ export default function Dependents() {
             </div>
 
             <div>
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">
+                اسم الأب <span className="text-red-400">*</span>
+              </label>
+              <input value={form.fatherName} onChange={e => setField('fatherName', e.target.value)} className="input" />
+              {errors.fatherName && <p className="text-[11px] text-red-400 font-semibold mt-1.5">{errors.fatherName}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">
+                اسم الجد <span className="text-red-400">*</span>
+              </label>
+              <input value={form.grandfatherName} onChange={e => setField('grandfatherName', e.target.value)} className="input" />
+              {errors.grandfatherName && <p className="text-[11px] text-red-400 font-semibold mt-1.5">{errors.grandfatherName}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">الاسم باللغة المحلية</label>
+              <input value={form.localName} onChange={e => setField('localName', e.target.value)} className="input" dir="auto" />
+            </div>
+
+            <div>
               <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">صفة الشخص</label>
               <select value={form.relation} onChange={e => setField('relation', e.target.value)} className="input">
                 {relations.map(r => <option key={r} value={r}>{r}</option>)}
@@ -153,6 +195,34 @@ export default function Dependents() {
                 className="input font-mono tracking-wide"
               />
               {errors.idNumber && <p className="text-[11px] text-red-400 font-semibold mt-1.5">{errors.idNumber}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">جهة اتصال الطوارئ</label>
+              <input value={form.emergencyContactName} onChange={e => setField('emergencyContactName', e.target.value)} className="input" />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">هاتف الطوارئ</label>
+              <input value={form.emergencyContactPhone} onChange={e => setField('emergencyContactPhone', e.target.value)} className="input" dir="ltr" inputMode="tel" />
+              {errors.emergencyContactPhone && <p className="text-[11px] text-red-400 font-semibold mt-1.5">{errors.emergencyContactPhone}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">البريد الإلكتروني</label>
+              <input value={form.email} onChange={e => setField('email', e.target.value)} className="input" dir="ltr" type="email" />
+              {errors.email && <p className="text-[11px] text-red-400 font-semibold mt-1.5">{errors.email}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">رقم الهاتف</label>
+              <input value={form.phone} onChange={e => setField('phone', e.target.value)} className="input" dir="ltr" inputMode="tel" />
+              {errors.phone && <p className="text-[11px] text-red-400 font-semibold mt-1.5">{errors.phone}</p>}
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-black text-white/50 uppercase tracking-wider mb-1.5">العنوان</label>
+              <textarea value={form.address} onChange={e => setField('address', e.target.value)} className="input resize-none" rows={2} />
             </div>
           </div>
 
@@ -216,6 +286,20 @@ export default function Dependents() {
                   <IdentificationCard size={13} weight="duotone" className="text-violet-400/70" />
                   الهوية: <span className="text-white/60 font-bold font-mono" dir="ltr">{dep.idNumber}</span>
                 </p>
+                {(dep.fatherName || dep.grandfatherName || dep.localName) && (
+                  <p className="text-white/35">
+                    الأب والجد: <span className="text-white/60 font-bold">{[dep.fatherName, dep.grandfatherName].filter(Boolean).join(' · ') || '—'}</span>
+                    {dep.localName && <> · الاسم المحلي: <span className="text-white/60 font-bold">{dep.localName}</span></>}
+                  </p>
+                )}
+                {(dep.email || dep.phone || dep.emergencyContactName || dep.address) && (
+                  <div className="space-y-1 border-t border-white/[0.05] pt-2">
+                    {dep.email && <p className="text-white/45" dir="ltr">{dep.email}</p>}
+                    {dep.phone && <p className="text-white/45" dir="ltr">{dep.phone}</p>}
+                    {dep.emergencyContactName && <p className="text-white/45">طوارئ: {dep.emergencyContactName} {dep.emergencyContactPhone}</p>}
+                    {dep.address && <p className="text-white/45">العنوان: {dep.address}</p>}
+                  </div>
+                )}
               </div>
             </div>
           ))}

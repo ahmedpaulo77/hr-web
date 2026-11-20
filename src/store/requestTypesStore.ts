@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { requestTypes as defaultTypes, setRequestTypes } from '@/data/requestTypes'
 import type { FormField, RequestType } from '@/data/requestTypes'
+import { useAuthStore } from '@/store/authStore'
 
 /* ════════════════════════════════════════
    REQUEST TYPES STORE
@@ -99,7 +100,37 @@ export const useRequestTypesStore = create<RequestTypesState>()(
     }),
     {
       name: 'hr-request-types',
-      version: 2,
+      version: 5,
+      migrate: persistedState => {
+        const saved = persistedState as Partial<RequestTypesState>
+        const savedTypes = saved.types ?? []
+        const byId = new Map(savedTypes.map(type => [type.id, type]))
+        const defaultIds = new Set(defaultTypes.map(type => type.id))
+        const mergeFields = (type: RequestType): RequestType => {
+          const savedType = byId.get(type.id)
+          if (!savedType) return type
+          const savedFields = new Map(savedType.fields.map(field => [field.id, field]))
+          const defaultFieldIds = new Set(type.fields.map(field => field.id))
+          const fields = [
+            ...type.fields.map(field => {
+              const current = savedFields.get(field.id)
+              const merged = current ? { ...field, ...current } : field
+              return type.id === 'loan' && field.id === 'guarantor_hire_date'
+                ? { ...merged, required: true, readOnly: true }
+                : merged
+            }),
+            ...savedType.fields.filter(field => !defaultFieldIds.has(field.id)),
+          ]
+          return { ...type, ...savedType, fields }
+        }
+        return {
+          types: [
+            ...defaultTypes.map(mergeFields),
+            ...savedTypes.filter(type => !defaultIds.has(type.id)),
+          ],
+          disabledIds: saved.disabledIds ?? [],
+        }
+      },
       onRehydrateStorage: () => state => {
         if (state) sync(state.types)
       },
@@ -114,5 +145,8 @@ sync(useRequestTypesStore.getState().types)
 export const useAvailableRequestTypes = () => {
   const types = useRequestTypesStore(s => s.types)
   const disabledIds = useRequestTypesStore(s => s.disabledIds)
-  return types.filter(t => !disabledIds.includes(t.id))
+  const role = useAuthStore(s => s.user?.role ?? 'employee')
+  return types.filter(t =>
+    !disabledIds.includes(t.id) && (!t.roles || t.roles.includes(role)),
+  )
 }

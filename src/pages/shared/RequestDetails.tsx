@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore'
 import { getRequestType } from '@/data/requestTypes'
 import { getEmployeeByEmail } from '@/data/employees'
 import { requestsForManager } from '@/lib/requests'
+import { approvalFlowFor, approvalStageFor, currentApprovalRole, isAssignedApprover } from '@/lib/approvals'
 import { formatDate, formatDateTime } from '@/lib/format'
 import { iconForType } from '@/lib/requestIcons'
 import Badge from '@/components/ui/Badge'
@@ -62,14 +63,16 @@ export default function RequestDetails() {
   const type = getRequestType(request.typeId)
   const TypeIcon = iconForType(request.typeId)
   const employee = getEmployeeByEmail(request.employeeId)
-  const actor = { name: user?.name ?? '', role: role === 'manager' ? 'مدير' : role === 'admin' ? 'موارد بشرية' : 'موظف' }
+  const actor = {
+    id: user?.id,
+    userRole: user?.role,
+    name: user?.name ?? '',
+    role: role === 'manager' ? 'مدير' : role === 'admin' ? 'موارد بشرية' : 'موظف',
+  }
 
   const isOwner = request.employeeId === user?.id
   const canCancel = isOwner && request.status === 'pending'
-  const canDecide =
-    request.status === 'pending' &&
-    (role === 'admin' ||
-      (role === 'manager' && requestsForManager(requests, user?.id).some(r => r.id === request.id)))
+  const canDecide = isAssignedApprover(request, { id: user?.id, role: user?.role })
 
   const knownFields = (type?.fields ?? []).filter(f => f.type !== 'dependent' && !f.hidden)
   const knownIds = new Set(knownFields.map(f => f.id))
@@ -77,6 +80,9 @@ export default function RequestDetails() {
     .filter(key => !knownIds.has(key) && key !== 'dependent_id')
     .map(key => ({ id: key, label: key, type: 'text' as const }))
   const decidedFields = [...knownFields, ...extraFields]
+  const approvalFlow = approvalFlowFor(request)
+  const approvalStage = approvalStageFor(request)
+  const activeApprovalRole = currentApprovalRole(request)
 
   return (
     <div className="space-y-5 animate-fade-up max-w-6xl">
@@ -150,6 +156,38 @@ export default function RequestDetails() {
           <p className="text-sm text-white/60 leading-relaxed">{request.rejectionReason}</p>
         </div>
       )}
+
+      <section className="glass border-gradient rounded-2xl p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-black text-white">مسار الموافقات</h3>
+          <span className="text-xs font-bold text-white/40">
+            {request.status === 'approved'
+              ? 'اكتملت جميع المراحل'
+              : ['pending', 'processing'].includes(request.status) && activeApprovalRole
+                ? `بانتظار ${activeApprovalRole === 'admin' ? 'الموارد البشرية' : 'المدير المباشر'}`
+                : request.status === 'rejected' ? 'توقف المسار بعد الرفض' : 'انتهى الطلب'}
+          </span>
+        </div>
+        <ol className="grid gap-2 sm:grid-cols-2">
+          {approvalFlow.map((stage, index) => {
+            const complete = request.status === 'approved' || index < approvalStage
+            const current = ['pending', 'processing'].includes(request.status) && index === approvalStage
+            return (
+              <li key={`${stage}-${index}`} className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 ${
+                current ? 'border-violet-400/30 bg-violet-500/10' : complete ? 'border-emerald-500/20 bg-emerald-500/[0.05]' : 'border-white/[0.06] bg-white/[0.02]'
+              }`}>
+                <span className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-black ${
+                  complete ? 'bg-emerald-500/15 text-emerald-300' : current ? 'bg-violet-500/20 text-violet-300' : 'bg-white/[0.06] text-white/30'
+                }`}>{complete ? <Check size={14} weight="bold" /> : index + 1}</span>
+                <div>
+                  <p className="text-xs font-black text-white/75">{stage === 'admin' ? 'الموارد البشرية' : 'المدير المباشر'}</p>
+                  <p className="text-[10px] text-white/35">{complete ? 'تمت الموافقة' : current ? 'بانتظار الموافقة' : 'في انتظار المرحلة السابقة'}</p>
+                </div>
+              </li>
+            )
+          })}
+        </ol>
+      </section>
 
       <div className="grid lg:grid-cols-3 gap-5 items-start">
 
