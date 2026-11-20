@@ -36,7 +36,7 @@ function Hero() {
           <span style={{ fontSize:'12px', fontWeight:700, color:'#c4b5fd' }}>
             النظام الأكثر مرونةً في الشرق الأوسط
           </span>
-          <span className="text-xs font-bold" style={{ color:'#a78bfa' }}>✦ جديد</span>
+          <span className="text-xs font-bold" style={{ color:'#a78bfa' }}>جديد</span>
         </div>
 
         {/* Headline */}
@@ -73,13 +73,16 @@ function Hero() {
         <div className="animate-fade-up" style={{ animationDelay:'0.34s', marginTop:'56px' }}>
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
             {[
-              { n:'+500',  l:'شركة تثق بنا' },
-              { n:'+50K',  l:'موظف نشط'     },
-              { n:'99.9%', l:'وقت تشغيل'    },
-              { n:'4.9★',  l:'تقييم العملاء' },
+              { n:'+500',  l:'شركة تثق بنا',  star:false },
+              { n:'+50K',  l:'موظف نشط',      star:false },
+              { n:'99.9%', l:'وقت تشغيل',     star:false },
+              { n:'4.9',   l:'تقييم العملاء', star:true  },
             ].map(s => (
               <div key={s.l} className="text-center">
-                <p style={{ fontSize:'1.6rem', fontWeight:900, color:'var(--ink)', lineHeight:1 }}>{s.n}</p>
+                <p style={{ fontSize:'1.6rem', fontWeight:900, color:'var(--ink)', lineHeight:1, display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
+                  {s.n}
+                  {s.star && <Star size={17} weight="fill" color="#f59e0b" />}
+                </p>
                 <p style={{ fontSize:'11px', color:'rgba(var(--fg-rgb),0.38)', marginTop:'4px', fontWeight:600 }}>{s.l}</p>
               </div>
             ))}

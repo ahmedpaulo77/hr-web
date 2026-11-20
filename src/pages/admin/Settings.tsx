@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { FloppyDisk, CheckCircle } from '@phosphor-icons/react'
+import { useSettingsStore } from '@/store/settingsStore'
 
 export default function Settings() {
-  const [company, setCompany] = useState({
-    name: 'مجموعة النخبة', email: 'hr@company.com',
-    phone: '0112345678', website: 'www.company.com',
-  })
+  const { company: savedCompany, notifications: toggles, saveCompany, toggleNotification } = useSettingsStore()
+
+  const [company, setCompany] = useState(savedCompany)
   const [saved, setSaved] = useState(false)
-  const [toggles, setToggles] = useState([true, true, false])
 
   const handleSave = () => {
+    saveCompany(company)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
   }
@@ -63,7 +63,7 @@ export default function Settings() {
                 <p className="text-xs text-white/30 mt-0.5">{s.desc}</p>
               </div>
               <button
-                onClick={() => setToggles(t => t.map((v, j) => j === i ? !v : v))}
+                onClick={() => toggleNotification(i)}
                 className={`relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0 ${
                   toggles[i] ? 'bg-violet-600' : 'bg-white/[0.1]'
                 }`}

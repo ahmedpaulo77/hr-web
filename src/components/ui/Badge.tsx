@@ -1,10 +1,9 @@
-import { Clock, CheckCircle, XCircle, ArrowsClockwise } from '@phosphor-icons/react'
+import { Clock, CheckCircle, XCircle, ArrowsClockwise, Prohibit } from '@phosphor-icons/react'
+import type { RequestStatus } from '@/types'
 
-type BadgeStatus = 'pending' | 'approved' | 'rejected' | 'processing'
+interface BadgeProps { status: RequestStatus }
 
-interface BadgeProps { status: BadgeStatus }
-
-const config: Record<BadgeStatus, {
+const config: Record<RequestStatus, {
   label: string
   className: string
   dotClass: string
@@ -14,13 +13,14 @@ const config: Record<BadgeStatus, {
   approved:   { label: 'تمت الموافقة',   className: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20', dotClass: 'bg-emerald-400', icon: CheckCircle },
   rejected:   { label: 'مرفوض',          className: 'bg-red-500/10 text-red-300 border-red-500/20',          dotClass: 'bg-red-400',     icon: XCircle },
   processing: { label: 'جاري المعالجة',  className: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',       dotClass: 'bg-cyan-400',    icon: ArrowsClockwise },
+  cancelled:  { label: 'ملغي',           className: 'bg-white/[0.06] text-white/40 border-white/[0.1]',      dotClass: 'bg-white/30',    icon: Prohibit },
 }
 
 export default function Badge({ status }: BadgeProps) {
-  const { label, className, dotClass, icon: Icon } = config[status]
+  const { label, className, dotClass } = config[status] ?? config.pending
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-xl border ${className}`}>
-      <span className={`relative flex w-1.5 h-1.5`}>
+    <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-xl border whitespace-nowrap ${className}`}>
+      <span className="relative flex w-1.5 h-1.5">
         {status === 'pending' || status === 'processing'
           ? <span className={`absolute inline-flex h-full w-full rounded-full ${dotClass} opacity-60 animate-ping`} />
           : null}

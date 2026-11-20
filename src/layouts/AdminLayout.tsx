@@ -1,10 +1,11 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '@/components/ui/Sidebar'
 import TopBar from '@/components/ui/TopBar'
-import { SquaresFour, FileText, Users, ChartBar, Gear } from '@phosphor-icons/react'
+import { SquaresFour, FileText, Users, ChartBar, Gear, ClipboardText } from '@phosphor-icons/react'
 
 const navItems = [
   { label: 'الرئيسية',       path: '/app/admin',                icon: SquaresFour },
+  { label: 'الطلبات',        path: '/app/admin/requests',       icon: ClipboardText },
   { label: 'أنواع الطلبات',  path: '/app/admin/request-types',  icon: FileText    },
   { label: 'الموظفون',       path: '/app/admin/employees',       icon: Users       },
   { label: 'التقارير',       path: '/app/admin/reports',         icon: ChartBar    },
@@ -13,6 +14,7 @@ const navItems = [
 
 const titles: Record<string, { title: string; subtitle: string }> = {
   '/app/admin':               { title: 'لوحة الإدارة',    subtitle: 'إدارة شاملة للنظام' },
+  '/app/admin/requests':      { title: 'الطلبات',         subtitle: 'جميع طلبات الموظفين' },
   '/app/admin/request-types': { title: 'أنواع الطلبات',   subtitle: 'تخصيص وإدارة الطلبات' },
   '/app/admin/employees':     { title: 'الموظفون',         subtitle: 'إدارة بيانات الموظفين' },
   '/app/admin/reports':       { title: 'التقارير',         subtitle: 'تقارير وإحصائيات' },
@@ -21,7 +23,9 @@ const titles: Record<string, { title: string; subtitle: string }> = {
 
 export default function AdminLayout() {
   const location = useLocation()
-  const page = titles[location.pathname] || { title: 'HR Portal', subtitle: '' }
+  const page = location.pathname.startsWith('/app/admin/requests/')
+    ? { title: 'تفاصيل الطلب', subtitle: 'بيانات الطلب وسجل المتابعة' }
+    : titles[location.pathname] || { title: 'HR Portal', subtitle: '' }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-base)' }}>

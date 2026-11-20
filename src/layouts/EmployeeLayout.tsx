@@ -1,23 +1,27 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '@/components/ui/Sidebar'
 import TopBar from '@/components/ui/TopBar'
-import { SquaresFour, FileText, PlusCircle } from '@phosphor-icons/react'
+import { SquaresFour, FileText, PlusCircle, UsersThree } from '@phosphor-icons/react'
 
 const navItems = [
   { label: 'الرئيسية',  path: '/app/employee',              icon: SquaresFour },
   { label: 'طلباتي',    path: '/app/employee/requests',     icon: FileText    },
+  { label: 'التابعون',  path: '/app/employee/dependents',   icon: UsersThree  },
   { label: 'طلب جديد',  path: '/app/employee/requests/new', icon: PlusCircle  },
 ]
 
 const titles: Record<string, { title: string; subtitle: string }> = {
   '/app/employee':              { title: 'الرئيسية',  subtitle: 'مرحباً بك في بوابة الموظفين' },
   '/app/employee/requests':     { title: 'طلباتي',    subtitle: 'تابع جميع طلباتك' },
+  '/app/employee/dependents':   { title: 'التابعون',  subtitle: 'إدارة التابعين المسجلين' },
   '/app/employee/requests/new': { title: 'طلب جديد',  subtitle: 'اختر نوع الطلب' },
 }
 
 export default function EmployeeLayout() {
   const location = useLocation()
-  const page = titles[location.pathname] || { title: 'HR Portal', subtitle: '' }
+  const page = location.pathname.startsWith('/app/employee/requests/') && !location.pathname.startsWith('/app/employee/requests/new')
+    ? { title: 'تفاصيل الطلب', subtitle: 'بيانات الطلب وسجل المتابعة' }
+    : titles[location.pathname] || { title: 'HR Portal', subtitle: '' }
 
   return (
     /* RTL container: sidebar on right, content on left */

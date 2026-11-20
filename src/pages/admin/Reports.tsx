@@ -1,26 +1,25 @@
+import { useMemo } from 'react'
 import { DownloadSimple, TrendUp } from '@phosphor-icons/react'
-
-const monthlyData = [
-  { month: 'يناير', total: 45, approved: 38 },
-  { month: 'فبراير', total: 52, approved: 44 },
-  { month: 'مارس',   total: 61, approved: 55 },
-  { month: 'أبريل',  total: 48, approved: 40 },
-  { month: 'مايو',   total: 70, approved: 63 },
-  { month: 'يونيو',  total: 89, approved: 71 },
-]
-
-const max = Math.max(...monthlyData.map(d => d.total))
+import { useRequestsStore } from '@/store/requestsStore'
+import { approvalRate, avgProcessingDays, monthlySeries, typeDistribution } from '@/lib/requests'
 
 export default function Reports() {
+  const { requests } = useRequestsStore()
+
+  const series = useMemo(() => monthlySeries(requests, 6), [requests])
+  const distribution = useMemo(() => typeDistribution(requests, 5), [requests])
+  const max = Math.max(1, ...series.map(d => d.total))
+  const palette = ['#7c3aed', '#10b981', '#f59e0b', '#06b6d4', '#ef4444']
+
   return (
     <div className="space-y-5 animate-fade-up">
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 stagger">
         {[
-          { label: 'إجمالي الطلبات',      value: '365',    change: '+12%', color: 'violet' },
-          { label: 'معدل الموافقة',        value: '87%',    change: '+3%',  color: 'emerald' },
-          { label: 'متوسط وقت المعالجة',  value: '2.4 يوم', change: '-8%', color: 'amber' },
+          { label: 'إجمالي الطلبات',      value: String(requests.length), color: 'violet' },
+          { label: 'معدل الموافقة',        value: `${approvalRate(requests)}%`, color: 'emerald' },
+          { label: 'متوسط وقت المعالجة',  value: `${avgProcessingDays(requests)} يوم`, color: 'amber' },
         ].map(card => (
           <div key={card.label} className="glass border-gradient p-5 animate-fade-up">
             <p className="text-xs text-white/35 font-bold uppercase tracking-wider mb-3">{card.label}</p>
@@ -30,7 +29,7 @@ export default function Reports() {
               card.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-300' :
               'bg-amber-500/10 text-amber-300'
             }`}>
-              {card.change} هذا الشهر
+              محسوب من الطلبات الفعلية
             </span>
           </div>
         ))}
@@ -62,24 +61,22 @@ export default function Reports() {
 
         {/* Bars */}
         <div className="flex items-end gap-3" style={{ height: '180px' }}>
-          {monthlyData.map(d => (
-            <div key={d.month} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+          {series.map(d => (
+            <div key={d.label} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
               <div className="w-full flex gap-1 items-end" style={{ height: '150px' }}>
-                {/* Total bar */}
                 <div className="flex-1 relative group cursor-pointer"
-                  style={{ height: `${(d.total / max) * 100}%`, minHeight: '12px' }}>
+                  style={{ height: `${(d.total / max) * 100}%`, minHeight: '6px' }}>
                   <div className="absolute bottom-0 inset-x-0 rounded-t-lg bg-gradient-to-t from-violet-700 to-violet-500 opacity-60 hover:opacity-100 transition-opacity h-full" />
                   <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[var(--popover)] text-white text-[10px] font-black px-1.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-white/10">
                     {d.total}
                   </div>
                 </div>
-                {/* Approved bar */}
                 <div className="flex-1 relative group cursor-pointer"
-                  style={{ height: `${(d.approved / max) * 100}%`, minHeight: '8px' }}>
+                  style={{ height: `${(d.approved / max) * 100}%`, minHeight: '4px' }}>
                   <div className="absolute bottom-0 inset-x-0 rounded-t-lg bg-gradient-to-t from-emerald-700 to-emerald-500 opacity-60 hover:opacity-100 transition-opacity h-full" />
                 </div>
               </div>
-              <span className="text-[10px] text-white/25 font-semibold">{d.month}</span>
+              <span className="text-[10px] text-white/25 font-semibold">{d.label}</span>
             </div>
           ))}
         </div>
@@ -88,23 +85,21 @@ export default function Reports() {
       {/* Distribution */}
       <div className="glass border-gradient p-6 animate-fade-up">
         <h3 className="font-black text-white mb-5">توزيع الطلبات حسب النوع</h3>
-        <div className="space-y-4">
-          {[
-            { label: 'تثبيت راتب', pct: 35, color: '#7c3aed' },
-            { label: 'سلفة',        pct: 25, color: '#10b981' },
-            { label: 'شهادة خبرة', pct: 20, color: '#f59e0b' },
-            { label: 'تعريف راتب', pct: 12, color: '#06b6d4' },
-            { label: 'أخرى',        pct: 8,  color: '#ef4444' },
-          ].map(item => (
-            <div key={item.label} className="flex items-center gap-4">
-              <span className="text-sm text-white/45 w-24 font-semibold flex-shrink-0">{item.label}</span>
-              <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${item.pct}%`, background: item.color }} />
+        {distribution.length === 0 ? (
+          <p className="text-sm text-white/30">لا توجد طلبات لعرضها.</p>
+        ) : (
+          <div className="space-y-4">
+            {distribution.map((item, i) => (
+              <div key={item.label} className="flex items-center gap-4">
+                <span className="text-sm text-white/45 w-28 font-semibold flex-shrink-0 truncate">{item.label}</span>
+                <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${item.pct}%`, background: palette[i] }} />
+                </div>
+                <span className="text-sm font-black w-10 flex-shrink-0" style={{ color: palette[i] }}>{item.pct}%</span>
               </div>
-              <span className="text-sm font-black w-10 flex-shrink-0" style={{ color: item.color }}>{item.pct}%</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

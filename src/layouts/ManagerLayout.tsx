@@ -19,7 +19,9 @@ const titles: Record<string, { title: string; subtitle: string }> = {
 
 export default function ManagerLayout() {
   const location = useLocation()
-  const page = titles[location.pathname] || { title: 'HR Portal', subtitle: '' }
+  const page = location.pathname.startsWith('/app/manager/requests/') && !location.pathname.startsWith('/app/manager/requests/new')
+    ? { title: 'تفاصيل الطلب', subtitle: 'بيانات الطلب وسجل المتابعة' }
+    : titles[location.pathname] || { title: 'HR Portal', subtitle: '' }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-base)' }}>

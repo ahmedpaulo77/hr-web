@@ -1,6 +1,6 @@
 import { Outlet, Navigate, Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { Buildings } from '@phosphor-icons/react'
+import { Buildings, CheckCircle, Star } from '@phosphor-icons/react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export default function AuthLayout() {
@@ -114,15 +114,19 @@ export default function AuthLayout() {
 
           <div className="auth-brand-features" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[
-              '✦  14+ نوع طلب جاهز للاستخدام',
-              '✦  Form Builder بالسحب والإفلات',
-              '✦  موافقات متعددة المراحل',
-              '✦  تقارير وتحليلات متقدمة',
+              '14+ نوع طلب جاهز للاستخدام',
+              'Form Builder بالسحب والإفلات',
+              'موافقات متعددة المراحل',
+              'تقارير وتحليلات متقدمة',
             ].map(f => (
               <div key={f} className="auth-brand-feature" style={{
+                display: 'flex', alignItems: 'center', gap: 8,
                 fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)',
                 fontWeight: 600, lineHeight: 1.7, fontFamily: 'Cairo, sans-serif',
-              }}>{f}</div>
+              }}>
+                <CheckCircle size={16} weight="fill" color="#a78bfa" style={{ flexShrink: 0 }} />
+                <span>{f}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -134,12 +138,15 @@ export default function AuthLayout() {
           direction: 'rtl',
         }}>
           {[
-            { n: '4.9★', l: 'تقييم العملاء' },
-            { n: '99.9%', l: 'وقت التشغيل' },
-            { n: '24/7', l: 'دعم فني' },
+            { n: '4.9', l: 'تقييم العملاء', star: true },
+            { n: '99.9%', l: 'وقت التشغيل', star: false },
+            { n: '24/7', l: 'دعم فني', star: false },
           ].map(s => (
             <div key={s.l}>
-              <p style={{ fontSize: 20, fontWeight: 900, color: 'var(--ink)', fontFamily: 'Cairo, sans-serif' }}>{s.n}</p>
+              <p style={{ fontSize: 20, fontWeight: 900, color: 'var(--ink)', fontFamily: 'Cairo, sans-serif', display: 'flex', alignItems: 'center', gap: 4 }}>
+                {s.n}
+                {s.star && <Star size={15} weight="fill" color="#f59e0b" />}
+              </p>
               <p className="auth-brand-stat-label" style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', fontFamily: 'Cairo, sans-serif' }}>{s.l}</p>
             </div>
           ))}

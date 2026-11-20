@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { Eye, EyeSlash, ArrowLeft, SpinnerGap } from '@phosphor-icons/react'
+import { Eye, EyeSlash, ArrowLeft, SpinnerGap, User, Briefcase, GearSix, WarningCircle } from '@phosphor-icons/react'
 
 const demoAccounts = [
-  { email: 'employee@hr.com', password: '123456', role: 'employee' as const, name: 'أحمد محمد علي',   dept: 'تقنية المعلومات', pos: 'مطور برمجيات',   emoji: '👤', label: 'موظف' },
-  { email: 'manager@hr.com',  password: '123456', role: 'manager'  as const, name: 'محمد عبدالله',    dept: 'تقنية المعلومات', pos: 'مدير القسم',      emoji: '👔', label: 'مدير' },
-  { email: 'admin@hr.com',    password: '123456', role: 'admin'    as const, name: 'سارة أحمد',        dept: 'الموارد البشرية', pos: 'مسؤول النظام',   emoji: '⚙️', label: 'مسؤول' },
+  { email: 'employee@hr.com', password: '123456', role: 'employee' as const, name: 'أحمد محمد علي',   dept: 'تقنية المعلومات', pos: 'مطور برمجيات',   icon: User,       label: 'موظف' },
+  { email: 'manager@hr.com',  password: '123456', role: 'manager'  as const, name: 'محمد عبدالله',    dept: 'تقنية المعلومات', pos: 'مدير القسم',      icon: Briefcase,  label: 'مدير' },
+  { email: 'admin@hr.com',    password: '123456', role: 'admin'    as const, name: 'سارة أحمد',        dept: 'الموارد البشرية', pos: 'مسؤول النظام',   icon: GearSix,    label: 'مسؤول' },
 ]
 
 export default function LoginPage() {
@@ -33,7 +33,7 @@ export default function LoginPage() {
     <div className="animate-fade-up">
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-3xl font-black text-white mb-2">مرحباً بعودتك 👋</h2>
+        <h2 className="text-3xl font-black text-white mb-2">مرحباً بعودتك</h2>
         <p className="text-white/40 text-sm">سجّل دخولك للوصول إلى نظام HR Portal</p>
       </div>
 
@@ -85,8 +85,9 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3 font-medium">
-            ⚠ {error}
+          <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3 font-medium">
+            <WarningCircle size={17} weight="fill" className="flex-shrink-0" />
+            {error}
           </div>
         )}
 
@@ -118,7 +119,7 @@ export default function LoginPage() {
             onClick={() => { setEmail(acc.email); setPassword(acc.password) }}
             className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border border-white/[0.07] bg-white/[0.03] hover:bg-violet-500/10 hover:border-violet-500/25 transition-all group"
           >
-            <span className="text-xl">{acc.emoji}</span>
+            <acc.icon size={20} weight="duotone" className="text-violet-300/70 group-hover:text-violet-300 transition-colors" />
             <span className="text-xs font-bold text-white/40 group-hover:text-violet-300 transition-colors">
               {acc.label}
             </span>
