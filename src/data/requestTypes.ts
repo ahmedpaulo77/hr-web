@@ -141,6 +141,7 @@ export const requestTypes: RequestType[] = [
     description: 'طلب سلفة بحد أقصى يعادل راتب ثلاثة أشهر',
     color: '#f97316',
     category: 'salary',
+    approvalFlow: ['manager', 'admin'],
     attachments: { required: false, hint: 'مرفقات إن وجدت' },
     fields: [
       { id: 'amount', label: 'مبلغ السلفة', type: 'number', required: true, min: 1, placeholder: 'يُحدد حسب الراتب', help: 'أقصى مبلغ = مجموع 3 أشهر من الراتب' },
@@ -458,6 +459,7 @@ export const requestTypes: RequestType[] = [
     color: '#ef4444',
     category: 'hr',
     roles: ['employee'],
+    approvalFlow: ['manager', 'admin'],
     attachments: { required: false, hint: 'يمكن إرفاق خطاب الاستقالة' },
     fields: [
       { id: 'last_day', label: 'آخر يوم عمل مقترح', type: 'date', required: true },

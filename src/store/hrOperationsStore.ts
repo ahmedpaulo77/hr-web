@@ -48,50 +48,64 @@ const isoDate = (date: Date) => {
   return local.toISOString().slice(0, 10)
 }
 
-function seedAttendance(): AttendanceEntry[] {
+/** Stable per-employee offset so demo patterns vary but never change between reloads. */
+function seedIndex(employeeId: string) {
+  let hash = 0
+  for (let i = 0; i < employeeId.length; i += 1) {
+    hash = (hash * 31 + employeeId.charCodeAt(i)) % 97
+  }
+  return hash
+}
+
+/** Demo attendance window: 21 days back (scheduled) + 35 days forward. */
+function attendanceFor(employeeId: string): AttendanceEntry[] {
   const entries: AttendanceEntry[] = []
-  const people = seedEmployees.filter(employee => employee.status === 'active')
+  const personIndex = seedIndex(employeeId)
 
-  people.forEach((employee, personIndex) => {
-    for (let offset = -21; offset < 35; offset += 1) {
-      const date = new Date()
-      date.setDate(date.getDate() - offset)
-      if (date.getDay() === 5 || date.getDay() === 6) continue
+  for (let offset = -21; offset < 35; offset += 1) {
+    const date = new Date()
+    date.setDate(date.getDate() - offset)
+    if (date.getDay() === 5 || date.getDay() === 6) continue
 
-      if (offset < 0) {
-        entries.push({
-          id: `${employee.id}-${isoDate(date)}`,
-          employeeId: employee.id,
-          date: isoDate(date),
-          status: 'scheduled',
-          shift: '08:00 - 16:00',
-          shortageMinutes: 0,
-        })
-        continue
-      }
-
-      const marker = (offset + personIndex * 3) % 17
-      const status: AttendanceStatus =
-        marker === 2 ? 'absent'
-          : marker === 5 ? 'missing-punch'
-            : marker === 8 ? 'shortage'
-              : marker === 11 ? 'leave'
-                : 'present'
-
+    if (offset < 0) {
       entries.push({
-        id: `${employee.id}-${isoDate(date)}`,
-        employeeId: employee.id,
+        id: `${employeeId}-${isoDate(date)}`,
+        employeeId,
         date: isoDate(date),
-        status,
+        status: 'scheduled',
         shift: '08:00 - 16:00',
-        checkIn: status === 'absent' || status === 'leave' ? undefined : status === 'shortage' ? '08:42' : '07:58',
-        checkOut: status === 'missing-punch' || status === 'absent' || status === 'leave' ? undefined : '16:02',
-        shortageMinutes: status === 'shortage' ? 42 : 0,
+        shortageMinutes: 0,
       })
+      continue
     }
-  })
+
+    const marker = (offset + personIndex * 3) % 17
+    const status: AttendanceStatus =
+      marker === 2 ? 'absent'
+        : marker === 5 ? 'missing-punch'
+          : marker === 8 ? 'shortage'
+            : marker === 11 ? 'leave'
+              : 'present'
+
+    entries.push({
+      id: `${employeeId}-${isoDate(date)}`,
+      employeeId,
+      date: isoDate(date),
+      status,
+      shift: '08:00 - 16:00',
+      checkIn: status === 'absent' || status === 'leave' ? undefined : status === 'shortage' ? '08:42' : '07:58',
+      checkOut: status === 'missing-punch' || status === 'absent' || status === 'leave' ? undefined : '16:02',
+      shortageMinutes: status === 'shortage' ? 42 : 0,
+    })
+  }
 
   return entries
+}
+
+function seedAttendance(): AttendanceEntry[] {
+  return seedEmployees
+    .filter(employee => employee.status === 'active')
+    .flatMap(employee => attendanceFor(employee.id))
 }
 
 interface HrOperationsState {
@@ -104,6 +118,8 @@ interface HrOperationsState {
   recordLeaveSale: (employeeId: string, days: number) => void
   transferLeave: (fromId: string, toId: string, days: number) => void
   applyApprovedLeave: (requestId: string, employeeId: string, effect: LeaveEffect, days: number, recipientId?: string) => void
+  /** Generates demo attendance rows for employees that don't have any yet (e.g. newly hired). */
+  ensureAttendance: (employeeIds: string[]) => void
   addDocument: (document: EmployeeDocument) => void
   removeDocument: (employeeId: string, documentId: string) => void
 }
@@ -173,6 +189,14 @@ export const useHrOperationsStore = create<HrOperationsState>()(
             appliedLeaveRequestIds: [...current.appliedLeaveRequestIds, requestId],
           }
         })
+      },
+
+      ensureAttendance: employeeIds => {
+        const state = get()
+        const known = new Set(state.attendance.map(entry => entry.employeeId))
+        const missing = [...new Set(employeeIds)].filter(id => id && !known.has(id))
+        if (!missing.length) return
+        set({ attendance: [...state.attendance, ...missing.flatMap(id => attendanceFor(id))] })
       },
 
       addDocument: document =>

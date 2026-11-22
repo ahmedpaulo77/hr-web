@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useEmployeesStore } from '@/store/employeesStore'
 import { useHrOperationsStore, type AttendanceStatus } from '@/store/hrOperationsStore'
@@ -36,10 +36,20 @@ export default function AttendancePage({ teamMode = false }: { teamMode?: boolea
   const { user } = useAuthStore()
   const employees = useEmployeesStore(state => state.employees)
   const attendance = useHrOperationsStore(state => state.attendance)
+  const ensureAttendance = useHrOperationsStore(state => state.ensureAttendance)
   const isManager = teamMode && user?.role === 'manager'
-  const people = isManager
-    ? employees.filter(employee => employee.managerId === user?.id && employee.status === 'active')
-    : employees.filter(employee => employee.id === user?.id)
+  const people = useMemo(
+    () => isManager
+      ? employees.filter(employee => employee.managerId === user?.id && employee.status === 'active')
+      : employees.filter(employee => employee.id === user?.id),
+    [employees, isManager, user?.id],
+  )
+
+  // Employees added from the admin dashboard have no seeded rows — fill them on first view.
+  useEffect(() => {
+    ensureAttendance(people.map(person => person.id))
+  }, [ensureAttendance, people])
+
   const allowedIds = useMemo(() => new Set(people.map(person => person.id)), [people])
   const employeeNames = useMemo(() => new Map(people.map(person => [person.id, person.name])), [people])
 

@@ -13,6 +13,8 @@ export default function PendingApprovals() {
   const { user } = useAuthStore()
   const { requests, approve, reject } = useRequestsStore()
   const navigate = useNavigate()
+  // Same page is mounted for managers and HR admins — keep details links inside the right role area.
+  const basePath = `/app/${user?.role ?? 'manager'}`
   const [target, setTarget] = useState<{ request: RequestRecord; action: 'approve' | 'reject' } | null>(null)
 
   const pending = useMemo(
@@ -46,7 +48,7 @@ export default function PendingApprovals() {
           <div key={req.id} className="glass border-gradient p-5 hover:-translate-y-0.5 transition-all duration-300">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <button
-                onClick={() => navigate(`/app/manager/requests/${req.id}`)}
+                onClick={() => navigate(`${basePath}/requests/${req.id}`)}
                 className="flex items-center gap-4 text-right"
               >
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-700/20 border border-violet-500/20 flex items-center justify-center font-black text-violet-300 text-lg">
@@ -85,7 +87,7 @@ export default function PendingApprovals() {
                   <X size={15} weight="bold" /> رفض
                 </button>
                 <button
-                  onClick={() => navigate(`/app/manager/requests/${req.id}`)}
+                  onClick={() => navigate(`${basePath}/requests/${req.id}`)}
                   className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-violet-300 hover:bg-violet-500/10 transition-all"
                   aria-label="عرض التفاصيل"
                 >

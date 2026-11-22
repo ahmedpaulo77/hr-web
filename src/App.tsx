@@ -108,7 +108,7 @@ export default function App() {
           <Route element={<ProtectedRoute role="manager"><ManagerLayout /></ProtectedRoute>}>
             <Route path="/app/manager"               element={<ManagerDashboard />} />
             <Route path="/app/manager/approvals"     element={<PendingApprovals />} />
-<Route path="/app/manager/team"         element={<TeamRequests />} />
+            <Route path="/app/manager/team"          element={<TeamRequests />} />
             <Route path="/app/manager/team-operations" element={<ManagerTeamOperations />} />
             <Route path="/app/manager/attendance" element={<AttendancePage teamMode />} />
             <Route path="/app/manager/requests/new"  element={<NewRequest />} />

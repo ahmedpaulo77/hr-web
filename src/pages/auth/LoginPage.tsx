@@ -16,12 +16,14 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false)
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
+  const [notice,   setNotice]   = useState('')
   const { login }  = useAuthStore()
   const navigate   = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setNotice('')
     setLoading(true)
     await new Promise(r => setTimeout(r, 900))
     const acc = demoAccounts.find(a => a.email === email && a.password === password)
@@ -68,7 +70,11 @@ export default function LoginPage() {
             <label className="text-xs font-black text-white/50 uppercase tracking-wider">
               كلمة المرور
             </label>
-            <button type="button" className="text-xs text-violet-400 hover:text-violet-300 font-semibold">
+            <button
+              type="button"
+              onClick={() => { setError(''); setNotice('لإعادة تعيين كلمة المرور تواصل مع مسؤول النظام أو الموارد البشرية.') }}
+              className="text-xs text-violet-400 hover:text-violet-300 font-semibold"
+            >
               نسيت كلمة المرور؟
             </button>
           </div>
@@ -93,6 +99,13 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
+
+        {notice && (
+          <div className="flex items-center gap-2 bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm rounded-xl px-4 py-3 font-medium">
+            <WarningCircle size={17} weight="fill" className="flex-shrink-0" />
+            {notice}
+          </div>
+        )}
 
         {error && (
           <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3 font-medium">

@@ -259,12 +259,16 @@ export default function Employees() {
   const [confirm, setConfirm] = useState<{ title: string; message: string; label: string; run: () => void } | null>(null)
 
   const filtered = useMemo(
-    () => employees.filter(e =>
-      e.name.includes(search) ||
-      e.email.includes(search) ||
-      e.department.includes(search) ||
-      e.employeeNumber.includes(search),
-    ),
+    () => {
+      const term = search.trim().toLowerCase()
+      if (!term) return employees
+      return employees.filter(e =>
+        e.name.toLowerCase().includes(term) ||
+        e.email.toLowerCase().includes(term) ||
+        e.department.toLowerCase().includes(term) ||
+        e.employeeNumber.toLowerCase().includes(term),
+      )
+    },
     [search, employees],
   )
 

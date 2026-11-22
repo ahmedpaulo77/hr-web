@@ -72,6 +72,7 @@ function build({ n, typeId, employeeId, status, days, values, rejectionReason, n
     values,
     attachments: [],
     timeline,
+    approvalFlow: type.approvalFlow,
     rejectionReason,
   }
 }
