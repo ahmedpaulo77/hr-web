@@ -2,9 +2,10 @@ import { Bell, MagnifyingGlass, CaretDown, User, SignOut } from '@phosphor-icons
 import { useAuthStore } from '@/store/authStore'
 import { useEmployeesStore } from '@/store/employeesStore'
 import { useRequestsStore } from '@/store/requestsStore'
-import { useNavigate } from 'react-router-dom'
-import { useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { currentApprovalRole, isAssignedApprover } from '@/lib/approvals'
+import { requestsForEmployee, requestsForManager } from '@/lib/requests'
 import { formatDate } from '@/lib/format'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
@@ -19,12 +20,24 @@ export default function TopBar({ title, subtitle }: TopBarProps) {
   const employees = useEmployeesStore(state => state.employees)
   const requests = useRequestsStore(state => state.requests)
   const navigate = useNavigate()
+  const location = useLocation()
+  const searchRef = useRef<HTMLDivElement>(null)
+  const notifRef = useRef<HTMLDivElement>(null)
+  const avatarRef = useRef<HTMLDivElement>(null)
   const [notifOpen, setNotifOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
 
   const role = user?.role ?? 'employee'
   const basePath = `/app/${role}`
+
+  /* Search only what this role is allowed to open — employees and managers must not
+     see other people's requests (their details pages are guarded anyway). */
+  const scopedRequests = useMemo(() => {
+    if (role === 'admin') return requests
+    if (role === 'manager') return requestsForManager(requests, user?.id)
+    return requestsForEmployee(requests, user?.id)
+  }, [requests, role, user?.id])
 
   /* Notifications are derived from the live requests the user is part of. */
   const notifications = useMemo<NotificationItem[]>(() => {
@@ -69,7 +82,7 @@ export default function TopBar({ title, subtitle }: TopBarProps) {
     const term = query.trim().toLowerCase()
     if (!term) return []
 
-    const matchedRequests = requests
+    const matchedRequests = scopedRequests
       .filter(request =>
         request.employeeName.toLowerCase().includes(term) ||
         request.typeTitle.toLowerCase().includes(term) ||
@@ -100,7 +113,7 @@ export default function TopBar({ title, subtitle }: TopBarProps) {
       : []
 
     return [...matchedRequests, ...matchedEmployees]
-  }, [query, requests, employees, role, basePath])
+  }, [query, scopedRequests, employees, role, basePath])
 
   const closeOverlays = () => {
     setNotifOpen(false)
@@ -112,6 +125,27 @@ export default function TopBar({ title, subtitle }: TopBarProps) {
     closeOverlays()
     navigate(to)
   }
+
+  /* Outside presses close each dropdown on its own, so clicking the search box never
+     cancels the search the way a full-screen click-catcher did. */
+  useEffect(() => {
+    if (!notifOpen && !menuOpen && !query) return
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node
+      if (!searchRef.current?.contains(target)) setQuery('')
+      if (!notifRef.current?.contains(target)) setNotifOpen(false)
+      if (!avatarRef.current?.contains(target)) setMenuOpen(false)
+    }
+    document.addEventListener('pointerdown', handlePointerDown)
+    return () => document.removeEventListener('pointerdown', handlePointerDown)
+  }, [notifOpen, menuOpen, query])
+
+  /* Leaving the page shouldn't leave a stale dropdown behind. */
+  useEffect(() => {
+    setNotifOpen(false)
+    setMenuOpen(false)
+    setQuery('')
+  }, [location.pathname])
 
   return (
     /* RTL row: title on right, actions on left */
@@ -145,16 +179,8 @@ export default function TopBar({ title, subtitle }: TopBarProps) {
       {/* Actions — LEFT side */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
 
-        {/* Closes any open dropdown when the user clicks away */}
-        {(notifOpen || menuOpen || results.length > 0) && (
-          <div
-            onClick={closeOverlays}
-            style={{ position: 'fixed', inset: 0, zIndex: 90 }}
-          />
-        )}
-
         {/* Search */}
-        <div style={{ position: 'relative' }}>
+        <div ref={searchRef} style={{ position: 'relative' }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '8px 14px',
@@ -224,7 +250,7 @@ export default function TopBar({ title, subtitle }: TopBarProps) {
         <ThemeToggle />
 
         {/* Notifications */}
-        <div style={{ position: 'relative' }}>
+        <div ref={notifRef} style={{ position: 'relative' }}>
           <button
             onClick={() => { setMenuOpen(false); setNotifOpen(open => !open) }}
             style={{
@@ -321,7 +347,7 @@ export default function TopBar({ title, subtitle }: TopBarProps) {
         </div>
 
         {/* Avatar */}
-        <div style={{ position: 'relative' }}>
+        <div ref={avatarRef} style={{ position: 'relative' }}>
           <button style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '6px 12px', borderRadius: 11,
