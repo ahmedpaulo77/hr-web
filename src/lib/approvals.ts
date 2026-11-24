@@ -16,7 +16,13 @@ export function isAssignedApprover(
 ) {
   if (!['pending', 'processing'].includes(request.status)) return false
   const role = currentApprovalRole(request)
-  if (!role || user.role !== role) return false
-  if (role === 'admin') return true
-  return Boolean(user.id && getEmployeeByEmail(request.employeeId)?.managerId === user.id)
+  if (!role) return false
+  if (role === 'admin') return user.role === 'admin'
+
+  /* First stage = the employee's direct manager. HR admins also cover this stage for
+     employees whose manager is the admin account (small orgs where HR is the line
+     manager), otherwise those requests could never be approved. */
+  if (user.role !== 'manager' && user.role !== 'admin') return false
+  const employee = getEmployeeByEmail(request.employeeId)
+  return Boolean(user.id && employee?.managerId === user.id)
 }

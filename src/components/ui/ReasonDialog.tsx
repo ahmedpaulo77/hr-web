@@ -61,14 +61,18 @@ export default function ReasonDialog({
         <h3 className="text-lg font-black text-white mb-1">{title}</h3>
         {description && <p className="text-sm text-white/40 leading-relaxed mb-4">{description}</p>}
 
-        <textarea
-          rows={3}
-          value={reason}
-          onChange={e => { setReason(e.target.value); setError('') }}
-          placeholder="اكتب السبب هنا..."
-          className="input resize-none mt-3"
-        />
-        {error && <p className="text-xs text-red-400 font-semibold mt-1.5">{error}</p>}
+        {requireReason && (
+          <>
+            <textarea
+              rows={3}
+              value={reason}
+              onChange={e => { setReason(e.target.value); setError('') }}
+              placeholder="اكتب السبب هنا..."
+              className="input resize-none mt-3"
+            />
+            {error && <p className="text-xs text-red-400 font-semibold mt-1.5">{error}</p>}
+          </>
+        )}
 
         <div className="flex gap-2 mt-5">
           <button onClick={submit} className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-colors ${toneClass[tone]}`}>

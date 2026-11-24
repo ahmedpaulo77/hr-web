@@ -1,8 +1,17 @@
 import { useState } from 'react'
-import { FloppyDisk, CheckCircle } from '@phosphor-icons/react'
+import { FloppyDisk, CheckCircle, Trash, ArrowCounterClockwise, Database } from '@phosphor-icons/react'
 import { DEFAULT_BRANDING, useSettingsStore } from '@/store/settingsStore'
 import type { BrandingSettings } from '@/store/settingsStore'
 import { useTenantId } from '@/lib/tenant'
+import { useEmployeesStore } from '@/store/employeesStore'
+import { useRequestsStore } from '@/store/requestsStore'
+import { useHrOperationsStore } from '@/store/hrOperationsStore'
+import { useDependentsStore } from '@/store/dependentsStore'
+import { useOrganizationStore } from '@/store/organizationStore'
+import { useRequestTypesStore } from '@/store/requestTypesStore'
+import ReasonDialog from '@/components/ui/ReasonDialog'
+
+const DEMO_ACCOUNT_IDS = ['employee@hr.com', 'manager@hr.com', 'admin@hr.com']
 
 export default function Settings() {
   const { company: savedCompany, notifications: toggles, saveCompany, toggleNotification } = useSettingsStore()
@@ -14,6 +23,28 @@ export default function Settings() {
   const [brand, setBrand] = useState<BrandingSettings>(branding)
   const [saved, setSaved] = useState(false)
   const [logoError, setLogoError] = useState('')
+  const [confirm, setConfirm] = useState<'clear' | 'restore' | null>(null)
+  const [dataNotice, setDataNotice] = useState('')
+
+  const clearDemoData = () => {
+    useEmployeesStore.getState().keepOnly(DEMO_ACCOUNT_IDS)
+    useRequestsStore.getState().clearAll()
+    useHrOperationsStore.getState().clearAll()
+    useDependentsStore.getState().clearAll()
+    setConfirm(null)
+    setDataNotice('تم مسح البيانات التجريبية. بقي فقط حسابات الدخول الثلاثة.')
+  }
+
+  const restoreDemoData = () => {
+    useEmployeesStore.getState().reset()
+    useRequestsStore.getState().reset()
+    useHrOperationsStore.getState().reset()
+    useDependentsStore.getState().reset()
+    useOrganizationStore.getState().reset()
+    useRequestTypesStore.getState().reset()
+    setConfirm(null)
+    setDataNotice('تمت استعادة البيانات التجريبية بالكامل.')
+  }
 
   const handleSave = () => {
     saveCompany(company)
@@ -148,6 +179,44 @@ export default function Settings() {
         </div>
       </div>
 
+      {/* Demo data */}
+      <div className="glass border-gradient overflow-hidden rounded-2xl">
+        <div className="border-b border-white/[0.06] px-5 py-4">
+          <h3 className="flex items-center gap-2 font-black text-white">
+            <Database size={18} weight="duotone" className="text-violet-400" />
+            بيانات النظام
+          </h3>
+          <p className="mt-1 text-xs text-white/35">كل البيانات محفوظة محلياً في هذا المتصفح (localStorage).</p>
+        </div>
+        <div className="space-y-4 p-6">
+          <p className="text-xs leading-relaxed text-white/40">
+            قبل تسليم نسخة نظيفة، امسح بيانات العرض التجريبية: سيتم حذف الطلبات وسجلات الحضور والتابعين،
+            ويبقى فقط حسابات الدخول الثلاثة (موظف / مدير / موارد بشرية).
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => { setDataNotice(''); setConfirm('clear') }}
+              className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm font-bold text-red-400 transition-colors hover:bg-red-500/20"
+            >
+              <Trash size={16} weight="bold" /> مسح البيانات التجريبية
+            </button>
+            <button
+              type="button"
+              onClick={() => { setDataNotice(''); setConfirm('restore') }}
+              className="btn-outline py-2.5"
+            >
+              <ArrowCounterClockwise size={16} weight="bold" /> استعادة البيانات التجريبية
+            </button>
+          </div>
+          {dataNotice && (
+            <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+              <CheckCircle size={15} weight="fill" /> {dataNotice}
+            </p>
+          )}
+        </div>
+      </div>
+
       {/* Save */}
       <button
         onClick={handleSave}
@@ -162,6 +231,28 @@ export default function Settings() {
           : <><FloppyDisk  size={18} weight="duotone" /> حفظ الإعدادات</>
         }
       </button>
+
+      <ReasonDialog
+        open={confirm === 'clear'}
+        title="مسح البيانات التجريبية"
+        description="سيتم حذف جميع الطلبات وسجلات الحضور والتابعين والاحتفاظ بحسابات الدخول الثلاثة فقط. يمكنك التراجع لاحقاً من زر الاستعادة."
+        confirmLabel="نعم، امسح البيانات"
+        tone="danger"
+        requireReason={false}
+        onClose={() => setConfirm(null)}
+        onConfirm={clearDemoData}
+      />
+
+      <ReasonDialog
+        open={confirm === 'restore'}
+        title="استعادة البيانات التجريبية"
+        description="سيتم استرجاع الموظفين والطلبات والحضور والتابعين وأنواع الطلبات إلى حالتها الأصلية."
+        confirmLabel="استعادة البيانات"
+        tone="neutral"
+        requireReason={false}
+        onClose={() => setConfirm(null)}
+        onConfirm={restoreDemoData}
+      />
     </div>
   )
 }

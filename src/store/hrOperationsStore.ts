@@ -122,6 +122,10 @@ interface HrOperationsState {
   ensureAttendance: (employeeIds: string[]) => void
   addDocument: (document: EmployeeDocument) => void
   removeDocument: (employeeId: string, documentId: string) => void
+  /** Restores the demo attendance/leave documents. */
+  reset: () => void
+  /** Empties all operational demo data (used before handing the app over). */
+  clearAll: () => void
 }
 
 export const useHrOperationsStore = create<HrOperationsState>()(
@@ -194,7 +198,10 @@ export const useHrOperationsStore = create<HrOperationsState>()(
       ensureAttendance: employeeIds => {
         const state = get()
         const known = new Set(state.attendance.map(entry => entry.employeeId))
-        const missing = [...new Set(employeeIds)].filter(id => id && !known.has(id))
+        /* Seed employees only get the demo rows created at boot; after clearing the demo
+           data we don't want them to silently come back. Real new hires still get rows. */
+        const seedIds = new Set(seedEmployees.map(employee => employee.id))
+        const missing = [...new Set(employeeIds)].filter(id => id && !known.has(id) && !seedIds.has(id))
         if (!missing.length) return
         set({ attendance: [...state.attendance, ...missing.flatMap(id => attendanceFor(id))] })
       },
@@ -214,6 +221,20 @@ export const useHrOperationsStore = create<HrOperationsState>()(
             [employeeId]: (state.documents[employeeId] ?? []).filter(document => document.id !== documentId),
           },
         })),
+
+      reset: () => set({
+        balances: {},
+        attendance: seedAttendance(),
+        documents: {},
+        appliedLeaveRequestIds: [],
+      }),
+
+      clearAll: () => set({
+        balances: {},
+        attendance: [],
+        documents: {},
+        appliedLeaveRequestIds: [],
+      }),
     }),
     { name: 'hr-operations', version: 1 },
   ),

@@ -34,9 +34,12 @@ interface SeedInput {
   note?: string
 }
 
-function build({ n, typeId, employeeId, status, days, values, rejectionReason, note }: SeedInput): RequestRecord {
-  const employee = getEmployeeByEmail(employeeId)!
-  const type = getRequestType(typeId)!
+function build({ n, typeId, employeeId, status, days, values, rejectionReason, note }: SeedInput): RequestRecord | null {
+  /* Seeds are skipped when their employee or request type is missing (e.g. the admin
+     cleared the demo staff), so the app can still boot on a clean dataset. */
+  const employee = getEmployeeByEmail(employeeId)
+  const type = getRequestType(typeId)
+  if (!employee || !type) return null
   const submittedAt = daysAgo(days)
   const handledAt = daysAgo(Math.max(0, days - 2))
 
@@ -138,5 +141,5 @@ export function buildSeedRequests(): RequestRecord[] {
         reason: 'إجازة سنوية',
       },
     }),
-  ]
+  ].filter((request): request is RequestRecord => request !== null)
 }

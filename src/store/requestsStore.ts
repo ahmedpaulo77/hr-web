@@ -26,6 +26,7 @@ interface RequestsState {
   reject: (id: string, actor: Actor, reason: string) => void
   cancel: (id: string, actor: Actor) => void
   reset: () => void
+  clearAll: () => void
 }
 
 const STATUS_LABEL: Record<RequestStatus, string> = {
@@ -198,6 +199,7 @@ export const useRequestsStore = create<RequestsState>()(
       cancel: (id, actor) => get().setStatus(id, 'cancelled', actor, 'أُلغي بواسطة الموظف'),
 
       reset: () => set({ requests: buildSeedRequests() }),
+      clearAll: () => set({ requests: [] }),
     }),
     {
       name: 'hr-requests',

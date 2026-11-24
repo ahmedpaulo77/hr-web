@@ -14,6 +14,7 @@ interface OrganizationState {
   addPosition: (name: string) => boolean
   renamePosition: (oldName: string, newName: string) => boolean
   removePosition: (name: string) => boolean
+  reset: () => void
 }
 
 const cleanName = (name: string) => name.trim().replace(/\s+/g, ' ')
@@ -73,6 +74,11 @@ export const useOrganizationStore = create<OrganizationState>()(
         set(state => ({ positions: state.positions.filter(item => item !== name) }))
         return true
       },
+
+      reset: () => set({
+        departments: unique(seedEmployees.map(employee => employee.department)),
+        positions: unique(seedEmployees.map(employee => employee.position)),
+      }),
     }),
     { name: 'hr-organization-catalog', version: 1 },
   ),

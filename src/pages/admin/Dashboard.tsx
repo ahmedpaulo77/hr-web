@@ -26,7 +26,13 @@ export default function AdminDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger">
-        <StatCard title="إجمالي الموظفين"   value={activeEmployees} icon={Users}       color="purple" />
+        <StatCard
+          title="إجمالي الموظفين"
+          value={employees.length}
+          subtitle={`${activeEmployees} موظف نشط`}
+          icon={Users}
+          color="purple"
+        />
         <StatCard title="الطلبات هذا الشهر" value={thisMonth}       icon={FileText}    color="cyan"   />
         <StatCard title="تمت الموافقة"       value={counts.approved} icon={CheckCircle} color="green"  />
         <StatCard title="طلبات معلقة"        value={counts.pending}  icon={Clock}       color="amber"  />

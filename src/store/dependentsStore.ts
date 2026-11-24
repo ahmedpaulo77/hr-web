@@ -16,6 +16,7 @@ interface DependentsState {
   remove: (employeeId: string, dependentId: string) => void
   list: (employeeId?: string | null) => Dependent[]
   reset: () => void
+  clearAll: () => void
 }
 
 export const useDependentsStore = create<DependentsState>()(
@@ -48,6 +49,7 @@ export const useDependentsStore = create<DependentsState>()(
       list: employeeId => (employeeId ? get().byEmployee[employeeId] ?? [] : []),
 
       reset: () => set({ byEmployee: seed() }),
+      clearAll: () => set({ byEmployee: {} }),
     }),
     { name: 'hr-dependents', version: 1 },
   ),

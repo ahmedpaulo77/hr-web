@@ -27,6 +27,8 @@ interface EmployeesState {
   removeEmployee: (id: string) => void
   toggleStatus: (id: string) => void
   reset: () => void
+  /** Keeps only the given employee ids (used when clearing demo data). */
+  keepOnly: (ids: string[]) => void
 }
 
 export const useEmployeesStore = create<EmployeesState>()(
@@ -76,6 +78,15 @@ export const useEmployeesStore = create<EmployeesState>()(
       reset: () => {
         sync(seedEmployees)
         set({ employees: seedEmployees })
+      },
+
+      keepOnly: ids => {
+        const keep = new Set(ids)
+        set(state => {
+          const next = state.employees.filter(employee => keep.has(employee.id))
+          sync(next)
+          return { employees: next }
+        })
       },
     }),
     {

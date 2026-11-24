@@ -1,7 +1,15 @@
 import { useMemo } from 'react'
 import { DownloadSimple, TrendUp } from '@phosphor-icons/react'
 import { useRequestsStore } from '@/store/requestsStore'
-import { approvalRate, avgProcessingDays, monthlySeries, typeDistribution } from '@/lib/requests'
+import { approvalRate, avgProcessingDays, monthlySeries, sortByNewest, typeDistribution } from '@/lib/requests'
+
+const statusLabels: Record<string, string> = {
+  pending: 'قيد الانتظار',
+  processing: 'جاري المعالجة',
+  approved: 'تمت الموافقة',
+  rejected: 'مرفوض',
+  cancelled: 'ملغي',
+}
 
 export default function Reports() {
   const { requests } = useRequestsStore()
@@ -10,6 +18,49 @@ export default function Reports() {
   const distribution = useMemo(() => typeDistribution(requests, 5), [requests])
   const max = Math.max(1, ...series.map(d => d.total))
   const palette = ['#7c3aed', '#10b981', '#f59e0b', '#06b6d4', '#ef4444']
+
+  const exportCsv = () => {
+    const cell = (value: unknown) => `"${String(value).replace(/"/g, '""')}"`
+    const rows: Array<Array<string | number>> = [
+      ['تقرير طلبات الموارد البشرية', new Date().toISOString().slice(0, 10)],
+      [],
+      ['الملخص'],
+      ['إجمالي الطلبات', requests.length],
+      ['معدل الموافقة', `${approvalRate(requests)}%`],
+      ['متوسط وقت المعالجة (يوم)', avgProcessingDays(requests)],
+      [],
+      ['الطلبات الشهرية'],
+      ['الشهر', 'إجمالي الطلبات', 'الموافق عليها'],
+      ...series.map(item => [item.label, item.total, item.approved]),
+      [],
+      ['التوزيع حسب النوع'],
+      ['النوع', 'العدد', 'النسبة'],
+      ...distribution.map(item => [item.label, item.count, `${item.pct}%`]),
+      [],
+      ['جميع الطلبات'],
+      ['رقم الطلب', 'الموظف', 'القسم', 'النوع', 'الحالة', 'تاريخ التقديم', 'آخر تحديث'],
+      ...sortByNewest(requests).map(request => [
+        request.id,
+        request.employeeName,
+        request.department,
+        request.typeTitle,
+        statusLabels[request.status] ?? request.status,
+        request.submittedAt.slice(0, 10),
+        request.updatedAt.slice(0, 10),
+      ]),
+    ]
+
+    /* BOM keeps Arabic readable when the CSV opens in Excel. */
+    const csv = '\uFEFF' + rows.map(row => row.map(cell).join(',')).join('\r\n')
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `hr-report-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="space-y-5 animate-fade-up">
@@ -42,8 +93,8 @@ export default function Reports() {
             <TrendUp size={18} weight="duotone" className="text-violet-400" />
             <h3 className="font-black text-white">الطلبات الشهرية</h3>
           </div>
-          <button className="btn-ghost text-xs py-2 px-3">
-            <DownloadSimple size={14} weight="bold" /> تصدير
+          <button onClick={exportCsv} className="btn-ghost text-xs py-2 px-3">
+            <DownloadSimple size={14} weight="bold" /> تصدير CSV
           </button>
         </div>
 
